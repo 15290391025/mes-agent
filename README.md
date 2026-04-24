@@ -42,6 +42,7 @@ ManuGent is designed to show practical understanding of both MES and Agent syste
 | Agent tool protocol | MES functions are exposed as typed tools instead of letting the LLM directly query arbitrary systems |
 | Manufacturing reasoning | Root-cause analysis links production metrics, defects, material lots, and equipment alarms |
 | Industrial safety | Read-only tools auto-run, advisory tools produce recommendations, write-like actions require approval |
+| Memory architecture | ChatGPT-inspired memory layers adapted to MES: session, incidents, factory facts, preferences, audit |
 | Connector abstraction | Demo and REST connectors share one tool interface, making real MES integration incremental |
 
 ## Why ManuGent?
@@ -99,7 +100,8 @@ ManuGent is designed to show practical understanding of both MES and Agent syste
 2. **ISA-95 Compliant**: Data models follow ISA-95/Purdue model standards
 3. **Edge-First**: Local LLM inference (Ollama/vLLM) with cloud fallback
 4. **Multi-Agent**: Specialized agents for different concerns (query, alert, schedule)
-5. **Governance-First**: Audit trail, constraint validation, human-in-the-loop
+5. **Memory-Aware**: Historical incidents, factory facts, user preferences, and audit events shape future answers
+6. **Governance-First**: Audit trail, constraint validation, human-in-the-loop
 
 ---
 
@@ -114,6 +116,7 @@ ManuGent is designed to show practical understanding of both MES and Agent syste
 | Backend API | FastAPI (Python) | Async, fast, great for data pipelines |
 | Database | PostgreSQL + TimescaleDB | Relational + time-series for sensor data |
 | Cache | Redis | Real-time state, pub/sub |
+| Memory | Layered memory store | Session context, incidents, factory knowledge, preferences, audit |
 | Edge Runtime | Ollama / vLLM | On-premise LLM inference |
 | Frontend | React + shadcn/ui | Chat interface + dashboards |
 
@@ -146,6 +149,7 @@ Run demo scenarios without any LLM or real MES:
 PYTHONPATH=src python3 examples/demo_root_cause.py
 PYTHONPATH=src python3 examples/demo_traceability.py
 PYTHONPATH=src python3 examples/demo_daily_report.py
+PYTHONPATH=src python3 examples/demo_memory.py
 ```
 
 ### Connect to your MES
@@ -188,6 +192,23 @@ See [DEMO_SCENARIOS.md](docs/DEMO_SCENARIOS.md) for detailed walkthroughs.
 | Yield root cause | "SMT-03 最近 24 小时良率为什么下降？" | Links yield trend, defects, material lot, and equipment alarms |
 | Traceability | "SN202604240031 这台产品经历了哪些工序？" | Shows route, equipment, operators, material lots, and quality result |
 | Morning report | "生成 SMT-03 今天早班生产日报" | Composes KPI, WIP, quality, RCA, and actions into an operations report |
+| Memory context | "SMT-03 yield" | Retrieves preferences, factory facts, incidents, and audit memories |
+
+## Memory Model
+
+ManuGent adapts ChatGPT-style memory concepts to MES operations:
+
+| Layer | ChatGPT analogy | MES Agent use |
+|-------|-----------------|---------------|
+| Session memory | Current conversation context | Active shift conversation and follow-up questions |
+| Episodic memory | Past chat history | Historical incidents, root-cause hypotheses, corrective actions |
+| Semantic memory | Stable remembered facts | Factory layout, line rules, SOPs, product routes, equipment metadata |
+| Preference memory | Saved memories / instructions | User, role, and report-format preferences |
+| Audit memory | Governance trace | Tool calls, parameters, safety level, result summaries, approvals |
+
+The current implementation includes an in-memory backend and prompt context builder.
+It is intentionally small so the architecture is easy to inspect, but the same
+interface can be backed by SQLite, PostgreSQL, or vector search later.
 
 ---
 
@@ -252,6 +273,7 @@ ManuGent is an early reference implementation. The current vertical slice includ
 - Built-in demo MES connector with SMT factory data
 - Generic REST MES connector
 - Manufacturing tool registry
+- Layered memory module with in-memory backend and audit capture
 - FastAPI server
 - Typer CLI
 - Docker Compose
@@ -260,7 +282,7 @@ ManuGent is an early reference implementation. The current vertical slice includ
 Next milestones:
 
 - Session isolation and API authentication
-- Persistent audit log for tool calls
+- Persistent memory backends: SQLite/PostgreSQL/vector retrieval
 - Configurable REST field mappings
 - LangGraph workflow for root-cause analysis
 - Minimal dashboard for demo storytelling

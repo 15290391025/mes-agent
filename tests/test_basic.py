@@ -115,3 +115,57 @@ def test_agent_response():
     assert "85.2%" in response.content
     assert len(response.tool_calls) == 1
     assert str(response) == response.content
+
+
+def test_memory_context_builder_groups_layers():
+    """Test memory context includes relevant factory and incident memories."""
+    from manugent.memory import InMemoryMemoryStore, MemoryContextBuilder
+    from manugent.memory.recipes import remember_factory_fact, remember_incident
+
+    store = InMemoryMemoryStore()
+    remember_factory_fact(
+        store,
+        "SMT-03 uses solder paste lot tracking for yield investigations.",
+        tags=["SMT-03", "yield"],
+    )
+    remember_incident(
+        store,
+        "Previous SMT-03 yield drop was linked to nozzle pickup alarms.",
+        tags=["SMT-03", "yield"],
+    )
+
+    context = MemoryContextBuilder(store).build_context("SMT-03 yield", scope="default")
+
+    assert "semantic" in context
+    assert "episodic" in context
+    assert "solder paste" in context
+    assert "nozzle pickup" in context
+
+
+@pytest.mark.asyncio
+async def test_agent_query_writes_audit_memory():
+    """Test direct tool queries write audit memories when memory is configured."""
+    from manugent.agent.core import MESAgent
+    from manugent.connector.demo import DemoMESConnector
+    from manugent.memory import InMemoryMemoryStore, MemoryLayer
+
+    class DummyLLM:
+        async def ainvoke(self, *args, **kwargs):  # pragma: no cover
+            raise AssertionError("query() should not invoke the LLM")
+
+    store = InMemoryMemoryStore()
+    connector = DemoMESConnector()
+    await connector.connect()
+    agent = MESAgent(
+        llm=DummyLLM(),
+        connector=connector,
+        memory_store=store,
+        memory_scope="factory-a",
+    )
+
+    result = await agent.query("query_wip", {"line_id": "SMT-03"})
+    audit = store.search(layer=MemoryLayer.AUDIT, scope="factory-a")
+
+    assert result.success
+    assert len(audit) == 1
+    assert audit[0].metadata["tool_name"] == "query_wip"

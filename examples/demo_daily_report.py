@@ -39,8 +39,14 @@ async def main() -> None:
 
     print("# SMT-03 Production Morning Report")
     print()
-    print(f"- Yield: {yield_summary['current']}% ({yield_summary['trend']}, avg {yield_summary['average']}%)")
-    print(f"- OEE: {oee_summary['current']}% ({oee_summary['trend']}, avg {oee_summary['average']}%)")
+    print(
+        f"- Yield: {yield_summary['current']}% "
+        f"({yield_summary['trend']}, avg {yield_summary['average']}%)"
+    )
+    print(
+        f"- OEE: {oee_summary['current']}% "
+        f"({oee_summary['trend']}, avg {oee_summary['average']}%)"
+    )
     print(f"- WIP stations: {len(wip_result.data)}")
     print(f"- Defects: {quality_summary['total_defects']}")
     print(f"- Top defect: {quality_summary['top_defects'][0][0]}")

@@ -14,6 +14,8 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 
 from manugent.connector.base import MESConnector, QueryResult
+from manugent.memory import MemoryContextBuilder, MemoryStore
+from manugent.memory.recipes import remember_tool_audit
 from manugent.protocol.tools import (
     MANUFACTURING_TOOLS,
     MCPTool,
@@ -50,6 +52,8 @@ class AgentConfig:
     """Agent configuration."""
     llm: BaseChatModel
     connector: MESConnector
+    memory_store: MemoryStore | None = None
+    memory_scope: str = "default"
     system_prompt: str = ""
     max_tool_calls: int = 10
     require_approval_for: list[str] = field(default_factory=lambda: [
@@ -91,13 +95,20 @@ class MESAgent:
         llm: BaseChatModel,
         connector: MESConnector,
         system_prompt: str = "",
+        memory_store: MemoryStore | None = None,
+        memory_scope: str = "default",
     ) -> None:
         self.config = AgentConfig(
             llm=llm,
             connector=connector,
+            memory_store=memory_store,
+            memory_scope=memory_scope,
             system_prompt=system_prompt or self._build_system_prompt(),
         )
         self._history: list[BaseMessage] = []
+        self._memory_context = (
+            MemoryContextBuilder(memory_store) if memory_store is not None else None
+        )
 
     def _build_system_prompt(self) -> str:
         """Build system prompt with tool descriptions."""
@@ -164,9 +175,14 @@ class MESAgent:
         tools = list_tools()
         tool_schemas = [self._tool_to_openai(t) for t in tools]
 
+        memory_context = self._build_memory_context(message)
+        system_prompt = self.config.system_prompt
+        if memory_context:
+            system_prompt = f"{system_prompt}\n\n{memory_context}"
+
         # Prepare messages
         messages = [
-            SystemMessage(content=self.config.system_prompt),
+            SystemMessage(content=system_prompt),
             *self._history,
         ]
 
@@ -212,6 +228,8 @@ class MESAgent:
                         result = await self.config.connector.execute_tool(tool_name, tool_args)
                         tool_result = result.to_dict()
 
+                    self._remember_tool_call(tool_name, tool_args, tool_result, tool_def)
+
                     tool_calls_made.append({
                         "tool": tool_name,
                         "args": tool_args,
@@ -255,7 +273,49 @@ class MESAgent:
 
         For when you already know which tool to call.
         """
-        return await self.config.connector.execute_tool(tool_name, params)
+        result = await self.config.connector.execute_tool(tool_name, params)
+        self._remember_tool_call(
+            tool_name,
+            params,
+            result.to_dict(),
+            MANUFACTURING_TOOLS.get(tool_name),
+        )
+        return result
+
+    def _build_memory_context(self, message: str) -> str:
+        """Build prompt memory context for the current turn."""
+        if not self._memory_context:
+            return ""
+        return self._memory_context.build_context(
+            query=message,
+            scope=self.config.memory_scope,
+        )
+
+    def _remember_tool_call(
+        self,
+        tool_name: str,
+        tool_args: dict[str, Any],
+        tool_result: dict[str, Any],
+        tool_def: MCPTool | None,
+    ) -> None:
+        """Persist an audit memory for a tool call."""
+        if self.config.memory_store is None:
+            return
+
+        success = tool_result.get("success")
+        result_summary = "approval required"
+        if success is not None:
+            result_summary = "success" if success else f"error: {tool_result.get('error')}"
+
+        safety_level = tool_def.safety_level.value if tool_def else "unknown"
+        remember_tool_audit(
+            self.config.memory_store,
+            tool_name=tool_name,
+            params=tool_args,
+            result_summary=result_summary,
+            scope=self.config.memory_scope,
+            safety_level=safety_level,
+        )
 
     def clear_history(self) -> None:
         """Clear conversation history."""

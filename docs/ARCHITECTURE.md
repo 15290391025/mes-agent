@@ -270,7 +270,80 @@ Factory networks are:
 
 ---
 
-## Layer 5: Data & Governance
+## Layer 5: Memory System
+
+ManuGent uses a ChatGPT-inspired memory design, adapted to manufacturing
+operations. ChatGPT-style memory separates short-lived conversation context,
+durable remembered facts/preferences, and project-scoped history. ManuGent maps
+that idea to MES concepts where context must be scoped by factory, line, role,
+and safety level.
+
+### Memory Layers
+
+| Layer | Purpose | MES examples | Current implementation |
+|-------|---------|--------------|------------------------|
+| Session | Current conversation context | Follow-up questions in a shift chat | `MESAgent._history` |
+| Episodic | Past events and cases | Yield drop incidents, RCA conclusions, corrective actions | `MemoryLayer.EPISODIC` |
+| Semantic | Stable factory knowledge | Line layout, SOP rules, material rules, equipment metadata | `MemoryLayer.SEMANTIC` |
+| Preference | User or role preferences | Report language, KPI format, manager/operator detail level | `MemoryLayer.PREFERENCE` |
+| Audit | Governance trace | Tool, params, safety level, result summary, approval status | `MemoryLayer.AUDIT` |
+
+### Design Principles
+
+1. **Scoped memory**: memories are scoped by factory/project so one plant does not
+   leak context into another.
+2. **Provenance first**: every memory has layer, policy, confidence, tags, and
+   metadata.
+3. **Audit is not optional**: tool calls are remembered as audit records even
+   when the model response is not stored.
+4. **Human control**: explicit memories and future persistent backends must
+   support deletion/forgetting.
+5. **Prompt budget aware**: `MemoryContextBuilder` retrieves compact relevant
+   memory instead of dumping all history into the prompt.
+
+### Current Code
+
+```text
+src/manugent/memory/base.py       # MemoryRecord, MemoryLayer, MemoryStore protocol
+src/manugent/memory/in_memory.py  # deterministic demo/test backend
+src/manugent/memory/context.py    # prompt context retrieval and formatting
+src/manugent/memory/recipes.py    # factory fact, incident, preference, audit helpers
+```
+
+`MESAgent` accepts an optional memory store:
+
+```python
+from manugent.agent.core import MESAgent
+from manugent.memory import InMemoryMemoryStore
+
+memory = InMemoryMemoryStore()
+agent = MESAgent(
+    llm=llm,
+    connector=connector,
+    memory_store=memory,
+    memory_scope="factory-a",
+)
+```
+
+When memory is configured:
+
+- relevant semantic, episodic, preference, and audit memories are added to the
+  system context for each chat turn
+- direct `query()` calls and LLM tool calls write audit memories
+- `forget(record_id)` can remove an individual memory from the store
+
+### Future Persistent Backends
+
+| Backend | Use |
+|---------|-----|
+| SQLite | Local edge node memory and audit trail |
+| PostgreSQL | Multi-user server memory, RBAC, audit retention |
+| Vector DB / pgvector | Semantic retrieval over incidents, SOPs, and reports |
+| Object storage | Long RCA reports, attachments, exported MES evidence |
+
+---
+
+## Layer 6: Data & Governance
 
 ### ISA-95 Data Model
 
