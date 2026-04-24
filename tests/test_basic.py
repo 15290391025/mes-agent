@@ -169,3 +169,35 @@ async def test_agent_query_writes_audit_memory():
     assert result.success
     assert len(audit) == 1
     assert audit[0].metadata["tool_name"] == "query_wip"
+
+
+@pytest.mark.asyncio
+async def test_root_cause_workflow_evidence_chain():
+    """Test deterministic RCA workflow returns typed evidence and actions."""
+    from manugent.connector.demo import DemoMESConnector
+    from manugent.memory import InMemoryMemoryStore
+    from manugent.memory.recipes import remember_incident
+    from manugent.models import EvidenceType
+    from manugent.workflows import RootCauseWorkflow
+
+    memory = InMemoryMemoryStore()
+    remember_incident(
+        memory,
+        "Previous SMT-03 yield drop was linked to MOUNTER-03A nozzle pickup alarms.",
+        tags=["SMT-03", "yield"],
+    )
+    connector = DemoMESConnector()
+    await connector.connect()
+    workflow = RootCauseWorkflow(connector, memory_store=memory)
+
+    report = await workflow.analyze_yield_drop("SMT-03")
+    evidence_types = {item.evidence_type for item in report.evidence}
+
+    assert report.incident_type == "yield_drop"
+    assert report.confidence > 0.5
+    assert EvidenceType.PRODUCTION in evidence_types
+    assert EvidenceType.QUALITY in evidence_types
+    assert EvidenceType.MATERIAL in evidence_types
+    assert EvidenceType.EQUIPMENT in evidence_types
+    assert EvidenceType.MEMORY in evidence_types
+    assert any(item.requires_approval for item in report.recommendations)

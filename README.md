@@ -40,7 +40,7 @@ ManuGent is designed to show practical understanding of both MES and Agent syste
 |------------|----------------------|
 | MES domain model | Lines, work orders, WIP, equipment, material lots, serial numbers, quality records, OEE, yield, traceability |
 | Agent tool protocol | MES functions are exposed as typed tools instead of letting the LLM directly query arbitrary systems |
-| Manufacturing reasoning | Root-cause analysis links production metrics, defects, material lots, and equipment alarms |
+| Manufacturing reasoning | Deterministic root-cause workflow builds evidence from production, quality, material, equipment, and memory |
 | Industrial safety | Read-only tools auto-run, advisory tools produce recommendations, write-like actions require approval |
 | Memory architecture | ChatGPT-inspired memory layers adapted to MES: session, incidents, factory facts, preferences, audit |
 | Connector abstraction | Demo and REST connectors share one tool interface, making real MES integration incremental |
@@ -150,6 +150,7 @@ PYTHONPATH=src python3 examples/demo_root_cause.py
 PYTHONPATH=src python3 examples/demo_traceability.py
 PYTHONPATH=src python3 examples/demo_daily_report.py
 PYTHONPATH=src python3 examples/demo_memory.py
+PYTHONPATH=src python3 examples/demo_workflow_root_cause.py
 ```
 
 ### Connect to your MES
@@ -193,6 +194,13 @@ See [DEMO_SCENARIOS.md](docs/DEMO_SCENARIOS.md) for detailed walkthroughs.
 | Traceability | "SN202604240031 这台产品经历了哪些工序？" | Shows route, equipment, operators, material lots, and quality result |
 | Morning report | "生成 SMT-03 今天早班生产日报" | Composes KPI, WIP, quality, RCA, and actions into an operations report |
 | Memory context | "SMT-03 yield" | Retrieves preferences, factory facts, incidents, and audit memories |
+| Evidence chain | "SMT-03 yield drop RCA" | Runs deterministic workflow and outputs typed evidence + recommendations |
+
+Core design docs:
+
+- [MES_DOMAIN_MODEL.md](docs/MES_DOMAIN_MODEL.md)
+- [ROOT_CAUSE_WORKFLOW.md](docs/ROOT_CAUSE_WORKFLOW.md)
+- [DEMO_SCENARIOS.md](docs/DEMO_SCENARIOS.md)
 
 ## Memory Model
 
@@ -272,6 +280,7 @@ ManuGent is an early reference implementation. The current vertical slice includ
 
 - Built-in demo MES connector with SMT factory data
 - Generic REST MES connector
+- MES domain models and deterministic root-cause workflow
 - Manufacturing tool registry
 - Layered memory module with in-memory backend and audit capture
 - FastAPI server
