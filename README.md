@@ -145,7 +145,6 @@ curl http://localhost:8000/approvals
 - [记忆、会话和持久化](docs/SESSION_AND_PERSISTENCE.md)
 - [Agent 安全边界](docs/SECURITY_MODEL.md)
 - [Demo 场景说明](docs/DEMO_SCENARIOS.md)
-- [命名与 GitHub 搜索建议](docs/NAMING.md)
 
 ## 8. 当前完成度
 
@@ -175,22 +174,6 @@ curl http://localhost:8000/approvals
 - 更完整的 Web UI
 - CI 运行所有 demo scripts
 
-## 9. 项目命名
-
-当前名字 `ManuGent` = Manufacturing + Agent，含义清楚，但 GitHub 搜索流量不一定最好。
-
-如果目标是被搜索到，仓库名可以考虑更直白的关键词：
-
-- `mes-agent`
-- `manufacturing-agent`
-- `mes-ai-agent`
-- `factory-agent`
-- `industrial-ai-agent`
-
-我的建议：**仓库名用 `mes-agent` 或 `manufacturing-agent`，项目品牌名仍叫 ManuGent。**
-
-这样兼顾搜索流量和品牌识别。
-
-## 10. License
+## 9. License
 
 MIT License.
