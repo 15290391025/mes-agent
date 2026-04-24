@@ -11,7 +11,7 @@ def test_version():
 
 def test_tool_registry():
     """Test MCP tool registration."""
-    from manugent.protocol.tools import list_tools, ToolCategory, SafetyLevel
+    from manugent.protocol.tools import SafetyLevel, ToolCategory, list_tools
 
     tools = list_tools()
     assert len(tools) > 0
