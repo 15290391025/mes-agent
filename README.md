@@ -43,6 +43,7 @@ ManuGent is designed to show practical understanding of both MES and Agent syste
 | Manufacturing reasoning | Deterministic root-cause workflow builds evidence from production, quality, material, equipment, and memory |
 | Industrial safety | Read-only tools auto-run, advisory tools produce recommendations, write-like actions require approval |
 | Memory architecture | ChatGPT-inspired memory layers adapted to MES: session, incidents, factory facts, preferences, audit |
+| Session isolation | Each API `session_id` gets isolated Agent history and memory scope |
 | Connector abstraction | Demo and REST connectors share one tool interface, making real MES integration incremental |
 
 ## Why ManuGent?
@@ -151,6 +152,7 @@ PYTHONPATH=src python3 examples/demo_traceability.py
 PYTHONPATH=src python3 examples/demo_daily_report.py
 PYTHONPATH=src python3 examples/demo_memory.py
 PYTHONPATH=src python3 examples/demo_workflow_root_cause.py
+PYTHONPATH=src python3 examples/demo_sqlite_memory.py
 ```
 
 ### Connect to your MES
@@ -200,6 +202,7 @@ Core design docs:
 
 - [MES_DOMAIN_MODEL.md](docs/MES_DOMAIN_MODEL.md)
 - [ROOT_CAUSE_WORKFLOW.md](docs/ROOT_CAUSE_WORKFLOW.md)
+- [SESSION_AND_PERSISTENCE.md](docs/SESSION_AND_PERSISTENCE.md)
 - [DEMO_SCENARIOS.md](docs/DEMO_SCENARIOS.md)
 
 ## Memory Model
@@ -215,8 +218,8 @@ ManuGent adapts ChatGPT-style memory concepts to MES operations:
 | Audit memory | Governance trace | Tool calls, parameters, safety level, result summaries, approvals |
 
 The current implementation includes an in-memory backend and prompt context builder.
-It is intentionally small so the architecture is easy to inspect, but the same
-interface can be backed by SQLite, PostgreSQL, or vector search later.
+It also includes a SQLite backend for local persistence and API audit memory.
+The same interface can be backed by PostgreSQL or vector search later.
 
 ---
 
@@ -283,6 +286,7 @@ ManuGent is an early reference implementation. The current vertical slice includ
 - MES domain models and deterministic root-cause workflow
 - Manufacturing tool registry
 - Layered memory module with in-memory backend and audit capture
+- SQLite memory persistence and API session isolation
 - FastAPI server
 - Typer CLI
 - Docker Compose
@@ -291,7 +295,8 @@ ManuGent is an early reference implementation. The current vertical slice includ
 Next milestones:
 
 - Session isolation and API authentication
-- Persistent memory backends: SQLite/PostgreSQL/vector retrieval
+- API authentication and RBAC
+- Persistent memory backends: PostgreSQL/vector retrieval
 - Configurable REST field mappings
 - LangGraph workflow for root-cause analysis
 - Minimal dashboard for demo storytelling

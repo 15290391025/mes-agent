@@ -17,16 +17,18 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from manugent.agent.core import AgentResponse, MESAgent
+from manugent.agent.core import AgentResponse
+from manugent.agent.session import AgentSessionManager
 from manugent.config.settings import Settings
 from manugent.connector.base import MESConnectionConfig
 from manugent.connector.factory import create_connector
+from manugent.memory import SQLiteMemoryStore
 from manugent.protocol.tools import MANUFACTURING_TOOLS, list_tools
 
 logger = logging.getLogger(__name__)
 
 # Global state
-_agent: MESAgent | None = None
+_session_manager: AgentSessionManager | None = None
 _settings: Settings | None = None
 
 
@@ -55,6 +57,7 @@ class QueryRequest(BaseModel):
     """Structured query request."""
     tool: str = Field(..., description="MCP tool name")
     params: dict[str, Any] = Field(default_factory=dict)
+    session_id: str | None = Field(default=None, description="Session ID for audit scope")
 
 
 class QueryResponse(BaseModel):
@@ -80,6 +83,7 @@ class HealthResponse(BaseModel):
     version: str
     mes_connected: bool
     tools_available: int
+    active_sessions: int = 0
 
 
 # ============================================
@@ -89,7 +93,7 @@ class HealthResponse(BaseModel):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
-    global _agent, _settings
+    global _session_manager, _settings
 
     # Startup
     _settings = Settings.from_env()
@@ -97,10 +101,6 @@ async def lifespan(app: FastAPI):
 
     logger.info("ManuGent API starting up...")
 
-    # Create LLM
-    llm = _settings.llm.get_llm()
-
-    # Create MES connector
     mes_config = MESConnectionConfig(
         mes_type=_settings.mes.mes_type,
         base_url=_settings.mes.mes_url,
@@ -110,23 +110,27 @@ async def lifespan(app: FastAPI):
         auth_password=_settings.mes.mes_password,
         timeout=_settings.mes.mes_timeout,
     )
-    connector = create_connector(mes_config)
+    memory_store = SQLiteMemoryStore(_settings.db.memory_db_path)
 
-    try:
-        await connector.connect()
-        logger.info(f"Connected to MES: {_settings.mes.mes_url}")
-    except Exception as e:
-        logger.warning(f"Could not connect to MES (will retry on queries): {e}")
+    def llm_factory():
+        return _settings.llm.get_llm()
 
-    # Create agent
-    _agent = MESAgent(llm=llm, connector=connector)
-    logger.info(f"Agent initialized with {_settings.llm.provider}/{_settings.llm.model}")
+    def connector_factory():
+        connector = create_connector(mes_config)
+        return connector
+
+    _session_manager = AgentSessionManager(
+        llm_factory=llm_factory,
+        connector_factory=connector_factory,
+        memory_store=memory_store,
+        default_scope=_settings.mes.mes_type,
+    )
+    logger.info(f"Session manager initialized with {_settings.llm.provider}/{_settings.llm.model}")
 
     yield
 
     # Shutdown
     logger.info("ManuGent API shutting down...")
-    await connector.disconnect()
 
 
 # ============================================
@@ -158,15 +162,20 @@ app.add_middleware(
 async def health_check():
     """Health check endpoint."""
     mes_connected = False
-    if _agent:
+    active_sessions = _session_manager.count() if _session_manager else 0
+    if _session_manager:
+        agent = _session_manager.get("__health__")
         with suppress(Exception):
-            mes_connected = await _agent.config.connector.health_check()
+            await agent.config.connector.connect()
+            mes_connected = await agent.config.connector.health_check()
+        _session_manager.clear("__health__")
 
     return HealthResponse(
         status="ok",
         version="0.1.0",
         mes_connected=mes_connected,
         tools_available=len(MANUFACTURING_TOOLS),
+        active_sessions=active_sessions,
     )
 
 
@@ -177,11 +186,13 @@ async def chat(request: ChatRequest):
     Send a natural language question about factory operations
     and get an AI-analyzed response based on real MES data.
     """
-    if not _agent:
+    if not _session_manager:
         raise HTTPException(status_code=503, detail="Agent not initialized")
 
     try:
-        response: AgentResponse = await _agent.chat(
+        agent = _session_manager.get(request.session_id)
+        await agent.config.connector.connect()
+        response: AgentResponse = await agent.chat(
             message=request.message,
             stream=request.stream,
         )
@@ -203,10 +214,12 @@ async def query(request: QueryRequest):
     Direct tool call without LLM reasoning. For when you
     already know which tool to call.
     """
-    if not _agent:
+    if not _session_manager:
         raise HTTPException(status_code=503, detail="Agent not initialized")
 
-    result = await _agent.query(request.tool, request.params)
+    agent = _session_manager.get(request.session_id)
+    await agent.config.connector.connect()
+    result = await agent.query(request.tool, request.params)
     return QueryResponse(
         success=result.success,
         data=result.data,
@@ -242,11 +255,12 @@ async def list_available_tools():
 
 
 @app.post("/chat/clear")
-async def clear_chat_history():
+async def clear_chat_history(session_id: str | None = None):
     """Clear conversation history."""
-    if _agent:
-        _agent.clear_history()
-    return {"status": "ok", "message": "Chat history cleared"}
+    if not _session_manager:
+        raise HTTPException(status_code=503, detail="Agent not initialized")
+    cleared = _session_manager.clear(session_id)
+    return {"status": "ok", "cleared": cleared, "session_id": session_id}
 
 
 # ============================================
@@ -257,6 +271,7 @@ class MCPToolCall(BaseModel):
     """MCP tool call request."""
     name: str
     arguments: dict[str, Any] = Field(default_factory=dict)
+    session_id: str | None = Field(default=None, description="Session ID for audit scope")
 
 
 class MCPToolResult(BaseModel):
@@ -272,10 +287,12 @@ async def mcp_tool_call(call: MCPToolCall):
     Standardized endpoint for agent-to-agent communication
     following the Model Context Protocol.
     """
-    if not _agent:
+    if not _session_manager:
         raise HTTPException(status_code=503, detail="Agent not initialized")
 
-    result = await _agent.query(call.name, call.arguments)
+    agent = _session_manager.get(call.session_id)
+    await agent.config.connector.connect()
+    result = await agent.query(call.name, call.arguments)
 
     return MCPToolResult(
         content=[{

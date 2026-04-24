@@ -64,6 +64,7 @@ class DatabaseSettings(BaseSettings):
         alias="DATABASE_URL",
     )
     redis_url: str = Field(default="redis://localhost:6379/0", alias="REDIS_URL")
+    memory_db_path: str = Field(default="data/manugent-memory.sqlite3", alias="MEMORY_DB_PATH")
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

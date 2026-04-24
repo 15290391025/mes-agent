@@ -201,3 +201,50 @@ async def test_root_cause_workflow_evidence_chain():
     assert EvidenceType.EQUIPMENT in evidence_types
     assert EvidenceType.MEMORY in evidence_types
     assert any(item.requires_approval for item in report.recommendations)
+
+
+def test_sqlite_memory_store_persists_records(tmp_path):
+    """Test SQLite memory persists records across store instances."""
+    from manugent.memory import MemoryLayer, SQLiteMemoryStore
+    from manugent.memory.recipes import remember_factory_fact
+
+    db_path = tmp_path / "memory.sqlite3"
+    store = SQLiteMemoryStore(db_path)
+    remember_factory_fact(
+        store,
+        "SMT-03 requires solder paste lot checks during yield RCA.",
+        scope="factory-a",
+        tags=["SMT-03", "yield"],
+    )
+
+    reopened = SQLiteMemoryStore(db_path)
+    records = reopened.search("SMT-03 yield", layer=MemoryLayer.SEMANTIC, scope="factory-a")
+
+    assert len(records) == 1
+    assert records[0].content.startswith("SMT-03 requires")
+
+
+def test_session_manager_isolates_agent_history():
+    """Test session manager creates independent agent histories."""
+    from manugent.agent.session import AgentSessionManager
+    from manugent.connector.demo import DemoMESConnector
+
+    class DummyLLM:
+        pass
+
+    manager = AgentSessionManager(
+        llm_factory=DummyLLM,
+        connector_factory=DemoMESConnector,
+    )
+
+    session_a = manager.get("a")
+    session_b = manager.get("b")
+    session_a._history.append("a-only")
+
+    assert session_a is manager.get("a")
+    assert session_b is manager.get("b")
+    assert session_a is not session_b
+    assert session_b.history == []
+    assert manager.count() == 2
+    assert manager.clear("a") is True
+    assert manager.count() == 1

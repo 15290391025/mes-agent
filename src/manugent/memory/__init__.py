@@ -8,6 +8,7 @@ from manugent.memory.base import (
 )
 from manugent.memory.context import MemoryContextBuilder
 from manugent.memory.in_memory import InMemoryMemoryStore
+from manugent.memory.sqlite import SQLiteMemoryStore
 
 __all__ = [
     "InMemoryMemoryStore",
@@ -16,4 +17,5 @@ __all__ = [
     "MemoryRecord",
     "MemoryStore",
     "MemoryWritePolicy",
+    "SQLiteMemoryStore",
 ]
