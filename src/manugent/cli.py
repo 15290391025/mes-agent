@@ -6,8 +6,6 @@ Command-line interface for ManuGent operations.
 from __future__ import annotations
 
 import asyncio
-import logging
-import sys
 from pathlib import Path
 
 import typer
@@ -79,7 +77,7 @@ async def _chat_interactive(config: Path, initial_message: str | None):
     from manugent.agent.core import MESAgent
     from manugent.config.settings import Settings
     from manugent.connector.base import MESConnectionConfig
-    from manugent.connector.rest import RestConnector
+    from manugent.connector.factory import create_connector
 
     settings = Settings(config)
 
@@ -99,7 +97,7 @@ async def _chat_interactive(config: Path, initial_message: str | None):
         auth_type="bearer" if settings.mes.mes_token else "none",
         auth_token=settings.mes.mes_token,
     )
-    connector = RestConnector(mes_config)
+    connector = create_connector(mes_config)
 
     try:
         await connector.connect()
@@ -153,7 +151,7 @@ async def _chat_interactive(config: Path, initial_message: str | None):
 @app.command()
 def tools():
     """List available manufacturing tools."""
-    from manugent.protocol.tools import list_tools, ToolCategory
+    from manugent.protocol.tools import list_tools
 
     table = Table(title="ManuGent Manufacturing Tools")
     table.add_column("Tool", style="cyan", no_wrap=True)
@@ -191,16 +189,16 @@ def init(
 
     env_example = configs_dir / ".env.example"
     if not env_example.exists():
-        # Copy default config
-        from manugent.config.settings import Settings
         default_config = """# ManuGent Configuration
-LLM_PROVIDER=openai
-LLM_API_KEY=sk-your-key
+LLM_PROVIDER=ollama
+LLM_API_KEY=
 LLM_MODEL=gpt-4o
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2.5:7b
 
-MES_TYPE=rest
-MES_BASE_URL=http://your-mes:8080/api
-MES_API_TOKEN=your-token
+MES_TYPE=demo
+MES_BASE_URL=demo://smt-factory
+MES_API_TOKEN=
 
 LOG_LEVEL=INFO
 API_PORT=8000

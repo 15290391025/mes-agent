@@ -10,9 +10,28 @@ Example:
     >>> response = agent.chat("3号线今天OEE是多少？")
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 __version__ = "0.1.0"
 
-from manugent.agent.core import MESAgent
-from manugent.connector.base import MESConnector
+if TYPE_CHECKING:
+    from manugent.agent.core import MESAgent
+    from manugent.connector.base import MESConnector
+
+
+def __getattr__(name: str):
+    """Lazy exports keep lightweight connector demos free of LLM dependencies."""
+    if name == "MESAgent":
+        from manugent.agent.core import MESAgent
+
+        return MESAgent
+    if name == "MESConnector":
+        from manugent.connector.base import MESConnector
+
+        return MESConnector
+    raise AttributeError(f"module 'manugent' has no attribute {name!r}")
+
 
 __all__ = ["MESAgent", "MESConnector", "__version__"]

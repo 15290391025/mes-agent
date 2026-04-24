@@ -66,6 +66,44 @@ def test_rest_connector_init():
     assert not connector.is_connected
 
 
+def test_demo_connector_schema():
+    """Test demo MES connector exposes manufacturing schema."""
+    from manugent.connector.demo import DemoMESConnector
+
+    connector = DemoMESConnector()
+    assert connector.mes_type == "demo"
+    assert "SMT-03" in connector._data["lines"]
+
+
+@pytest.mark.asyncio
+async def test_demo_root_cause_analysis():
+    """Test demo root-cause analysis returns evidence and actions."""
+    from manugent.connector.demo import DemoMESConnector
+
+    connector = DemoMESConnector()
+    await connector.connect()
+    result = await connector.execute_tool(
+        "analyze_root_cause",
+        {"issue_type": "yield_drop", "context": {"line_id": "SMT-03"}},
+    )
+
+    assert result.success
+    assert result.data["confidence"] > 0
+    assert len(result.data["evidence"]) >= 3
+    assert len(result.data["recommended_actions"]) >= 1
+
+
+def test_rest_connector_path_params_mapping():
+    """Test REST connector maps path parameters for templated URLs."""
+    from manugent.connector.base import MESConnectionConfig
+    from manugent.connector.rest import RestConnector
+
+    connector = RestConnector(MESConnectionConfig(mes_type="rest", base_url="http://mes/api"))
+    mapping = connector.endpoint_map["get_equipment_status"]
+    assert mapping["path"] == "/equipment/{equipment_id}/status"
+    assert mapping["param_map"]["equipment_id"] == "equipment_id"
+
+
 def test_agent_response():
     """Test AgentResponse dataclass."""
     from manugent.agent.core import AgentResponse

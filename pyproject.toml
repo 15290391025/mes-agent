@@ -36,6 +36,7 @@ dependencies = [
     "langgraph>=0.2.0",
     "langchain-core>=0.3.0",
     "langchain-openai>=0.2.0",
+    "langchain-anthropic>=0.3.0",
     "langchain-ollama>=0.2.0",
 
     # API
@@ -93,6 +94,9 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/manugent/cli.py" = ["B008"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

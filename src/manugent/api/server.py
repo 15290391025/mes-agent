@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 from manugent.agent.core import AgentResponse, MESAgent
 from manugent.config.settings import Settings
 from manugent.connector.base import MESConnectionConfig
-from manugent.connector.rest import RestConnector
+from manugent.connector.factory import create_connector
 from manugent.protocol.tools import MANUFACTURING_TOOLS, list_tools
 
 logger = logging.getLogger(__name__)
@@ -107,7 +107,7 @@ async def lifespan(app: FastAPI):
         auth_password=_settings.mes.mes_password,
         timeout=_settings.mes.mes_timeout,
     )
-    connector = RestConnector(mes_config)
+    connector = create_connector(mes_config)
 
     try:
         await connector.connect()
@@ -192,7 +192,7 @@ async def chat(request: ChatRequest):
         )
     except Exception as e:
         logger.error(f"Chat error: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/query", response_model=QueryResponse)

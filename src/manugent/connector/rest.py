@@ -55,13 +55,16 @@ DEFAULT_ENDPOINT_MAP: dict[str, dict[str, Any]] = {
     "get_equipment_status": {
         "method": "GET",
         "path": "/equipment/{equipment_id}/status",
-        "param_map": {},
+        "param_map": {
+            "equipment_id": "equipment_id",
+        },
         "response_path": "data",
     },
     "get_equipment_history": {
         "method": "GET",
         "path": "/equipment/{equipment_id}/history",
         "param_map": {
+            "equipment_id": "equipment_id",
             "days": "days",
         },
         "response_path": "data",
@@ -79,7 +82,9 @@ DEFAULT_ENDPOINT_MAP: dict[str, dict[str, Any]] = {
     "get_traceability": {
         "method": "GET",
         "path": "/quality/traceability/{serial_number}",
-        "param_map": {},
+        "param_map": {
+            "serial_number": "serial_number",
+        },
         "response_path": "data",
     },
 }
@@ -208,6 +213,8 @@ class RestConnector(MESConnector):
                     # Check if this param is used in URL path
                     if f"{{{tool_param}}}" in path:
                         path_params[tool_param] = params[tool_param]
+                    elif f"{{{mes_param}}}" in path:
+                        path_params[mes_param] = params[tool_param]
                     else:
                         mapped_params[mes_param] = params[tool_param]
 

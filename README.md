@@ -1,6 +1,6 @@
-# ManuGent - Manufacturing Intelligence Agent
+# ManuGent - MES Agent Reference Architecture
 
-> 给工厂MES系统装上AI大脑。用自然语言对话你的工厂。
+> 一个面向制造业 MES 场景的 Agent 中间层参考实现，展示如何把生产执行数据、质量追溯、设备状态和工单流转变成 Agent 可安全调用的工具。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-green.svg)](https://www.python.org/downloads/)
@@ -12,7 +12,14 @@
 
 ## What is ManuGent?
 
-ManuGent is an **AI Agent middleware layer** that sits between your existing MES system and your factory staff. It does NOT replace your MES — it gives it a brain.
+ManuGent is a **MES + Agent portfolio project**. It is not trying to replace a MES. It demonstrates how an AI Agent layer can sit above existing MES/ERP/QMS systems and provide:
+
+- Natural-language MES queries
+- Production KPI and WIP analysis
+- Product traceability
+- Quality and equipment root-cause analysis
+- Human-approved manufacturing actions
+- Auditable tool calls for industrial governance
 
 **Before ManuGent:**
 > 工程师: 打开MES → 筛选产线 → 选日期 → 导出报表 → Excel分析 → 写报告 → 汇报
@@ -21,7 +28,21 @@ ManuGent is an **AI Agent middleware layer** that sits between your existing MES
 > 工程师: "3号线最近一周良率下降的原因是什么？"
 > ManuGent: 分析数据 → 关联事件 → 给出根因 → 建议措施
 
+The project ships with a built-in `DemoMESConnector`, so the MES Agent workflow can be demonstrated without access to a private factory system.
+
 ---
+
+## What This Project Demonstrates
+
+ManuGent is designed to show practical understanding of both MES and Agent systems:
+
+| Capability | What it demonstrates |
+|------------|----------------------|
+| MES domain model | Lines, work orders, WIP, equipment, material lots, serial numbers, quality records, OEE, yield, traceability |
+| Agent tool protocol | MES functions are exposed as typed tools instead of letting the LLM directly query arbitrary systems |
+| Manufacturing reasoning | Root-cause analysis links production metrics, defects, material lots, and equipment alarms |
+| Industrial safety | Read-only tools auto-run, advisory tools produce recommendations, write-like actions require approval |
+| Connector abstraction | Demo and REST connectors share one tool interface, making real MES integration incremental |
 
 ## Why ManuGent?
 
@@ -100,44 +121,73 @@ ManuGent is an **AI Agent middleware layer** that sits between your existing MES
 
 ## Quick Start
 
+The fastest demo path uses the built-in simulated SMT factory data.
+
 ```bash
 # Clone
-git clone https://github.com/yourname/manugent.git
+git clone https://github.com/15290391025/manugent.git
 cd manugent
 
 # Setup
 cp configs/.env.example configs/.env
-# Edit .env with your MES connection and LLM API keys
+# Default config uses MES_TYPE=demo and Ollama for local inference.
 
 # Run with Docker
 docker compose up -d
 
 # Or run locally
 pip install -e .
-manugent serve --config configs/default.yaml
+manugent serve --config configs/.env
+```
+
+Run demo scenarios without any LLM or real MES:
+
+```bash
+PYTHONPATH=src python3 examples/demo_root_cause.py
+PYTHONPATH=src python3 examples/demo_traceability.py
+PYTHONPATH=src python3 examples/demo_daily_report.py
 ```
 
 ### Connect to your MES
 
 ```python
-from manugent import MESAgent
+from langchain_openai import ChatOpenAI
 
-agent = MESAgent(
-    mes_type="siemens_opcenter",  # or "dingjie", "custom"
-    mes_url="https://your-mes.example.com/api",
-    llm_provider="openai",       # or "ollama" for local
+from manugent import MESAgent
+from manugent.connector import MESConnectionConfig, create_connector
+
+connector = create_connector(
+    MESConnectionConfig(
+        mes_type="rest",
+        base_url="https://your-mes.example.com/api",
+        auth_type="bearer",
+        auth_token="your-token",
+    )
 )
 
+llm = ChatOpenAI(model="gpt-4o", api_key="your-key")
+agent = MESAgent(llm=llm, connector=connector)
+
 # Natural language query
-response = agent.chat("3号线今天OEE是多少？")
+response = await agent.chat("3号线今天OEE是多少？")
 print(response)
 
 # Structured query
-result = agent.query(
-    "Show me all failed batches in the last 24 hours "
-    "with root cause analysis"
+result = await agent.query(
+    "query_production_data",
+    {"line_id": "SMT-03", "metric": "oee", "time_range": "today"},
 )
 ```
+
+## Demo Scenarios
+
+See [DEMO_SCENARIOS.md](docs/DEMO_SCENARIOS.md) for detailed walkthroughs.
+
+| Scenario | User question | Demonstrated capability |
+|----------|---------------|-------------------------|
+| Yield root cause | "SMT-03 最近 24 小时良率为什么下降？" | Links yield trend, defects, material lot, and equipment alarms |
+| Traceability | "SN202604240031 这台产品经历了哪些工序？" | Shows route, equipment, operators, material lots, and quality result |
+| Morning report | "生成 SMT-03 今天早班生产日报" | Composes KPI, WIP, quality, RCA, and actions into an operations report |
 
 ---
 
@@ -195,15 +245,25 @@ See [ROADMAP.md](docs/ROADMAP.md) for detailed timeline.
 
 ---
 
-## Contributing
+## Current Status
 
-We welcome contributors from:
-- **Manufacturing domain experts** — help us define requirements and validate solutions
-- **LLM/AI engineers** — build better agents and reasoning chains
-- **MES developers** — create connectors for more MES platforms
-- **Factory floor workers** — tell us what actually sucks about your MES
+ManuGent is an early reference implementation. The current vertical slice includes:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+- Built-in demo MES connector with SMT factory data
+- Generic REST MES connector
+- Manufacturing tool registry
+- FastAPI server
+- Typer CLI
+- Docker Compose
+- Demo scripts for root cause, traceability, and daily report workflows
+
+Next milestones:
+
+- Session isolation and API authentication
+- Persistent audit log for tool calls
+- Configurable REST field mappings
+- LangGraph workflow for root-cause analysis
+- Minimal dashboard for demo storytelling
 
 ---
 

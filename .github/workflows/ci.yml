@@ -25,4 +25,4 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -e ".[dev]"
-      - run: pytest tests/ --tb=short -q || echo "No tests yet"
+      - run: pytest tests/ --tb=short -q

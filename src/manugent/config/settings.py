@@ -5,7 +5,6 @@ Handles loading configuration from environment variables and config files.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
@@ -71,8 +70,8 @@ class DatabaseSettings(BaseSettings):
 
 class MESSettings(BaseSettings):
     """MES connection configuration."""
-    mes_type: str = Field(default="rest", alias="MES_TYPE")
-    mes_url: str = Field(default="", alias="MES_BASE_URL")
+    mes_type: str = Field(default="demo", alias="MES_TYPE")
+    mes_url: str = Field(default="demo://smt-factory", alias="MES_BASE_URL")
     mes_token: str = Field(default="", alias="MES_API_TOKEN")
     mes_username: str = Field(default="", alias="MES_USERNAME")
     mes_password: str = Field(default="", alias="MES_PASSWORD")
