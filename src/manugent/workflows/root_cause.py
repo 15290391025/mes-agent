@@ -7,6 +7,7 @@ from typing import Any
 
 from manugent.connector.base import MESConnector
 from manugent.memory import MemoryLayer, MemoryStore
+from manugent.memory.recipes import remember_incident_report
 from manugent.models import Evidence, EvidenceType, IncidentReport, Recommendation
 
 
@@ -55,7 +56,7 @@ class RootCauseWorkflow:
         confidence = self._score_confidence(evidence)
         recommendations = self._recommend_actions(evidence)
 
-        return IncidentReport(
+        report = IncidentReport(
             incident_type="yield_drop",
             line_id=line_id,
             finding=finding,
@@ -63,6 +64,8 @@ class RootCauseWorkflow:
             evidence=evidence,
             recommendations=recommendations,
         )
+        self._persist_report(report)
+        return report
 
     async def _require_tool(self, tool_name: str, params: dict[str, Any]) -> Any:
         result = await self.connector.execute_tool(tool_name, params)
@@ -154,6 +157,15 @@ class RootCauseWorkflow:
             )
             for record in records
         ]
+
+    def _persist_report(self, report: IncidentReport) -> None:
+        if self.memory_store is None:
+            return
+        remember_incident_report(
+            self.memory_store,
+            report,
+            scope=self.memory_scope,
+        )
 
     def _build_finding(self, evidence: list[Evidence]) -> str:
         material = next(item for item in evidence if item.evidence_type == EvidenceType.MATERIAL)

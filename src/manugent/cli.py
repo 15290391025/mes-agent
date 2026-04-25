@@ -96,6 +96,10 @@ async def _chat_interactive(config: Path, initial_message: str | None):
         base_url=settings.mes.mes_url,
         auth_type="bearer" if settings.mes.mes_token else "none",
         auth_token=settings.mes.mes_token,
+        auth_username=settings.mes.mes_username,
+        auth_password=settings.mes.mes_password,
+        timeout=settings.mes.mes_timeout,
+        extra={"endpoint_mapping_path": settings.mes.mes_mapping_path},
     )
     connector = create_connector(mes_config)
 
@@ -199,6 +203,7 @@ OLLAMA_MODEL=qwen2.5:7b
 MES_TYPE=demo
 MES_BASE_URL=demo://smt-factory
 MES_API_TOKEN=
+MES_MAPPING_PATH=
 
 LOG_LEVEL=INFO
 API_PORT=8000

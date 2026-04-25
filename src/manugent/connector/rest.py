@@ -7,9 +7,12 @@ Supports configurable field mapping between MCP tools and MES endpoints.
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
+from pathlib import Path
 from typing import Any
 
 import httpx
+import yaml
 
 from manugent.connector.base import MESConnectionConfig, MESConnector, QueryResult
 
@@ -90,6 +93,42 @@ DEFAULT_ENDPOINT_MAP: dict[str, dict[str, Any]] = {
 }
 
 
+def load_endpoint_map(path: str | Path) -> dict[str, dict[str, Any]]:
+    """Load tool-to-REST endpoint mappings from YAML."""
+    mapping_path = Path(path).expanduser()
+    with mapping_path.open(encoding="utf-8") as file:
+        raw = yaml.safe_load(file) or {}
+
+    if not isinstance(raw, dict):
+        raise ValueError(f"REST mapping file must be a YAML object: {mapping_path}")
+
+    endpoints = raw.get("tools") or raw.get("endpoints") or raw
+    if not isinstance(endpoints, dict):
+        raise ValueError("REST mapping must contain a 'tools' or 'endpoints' object")
+
+    endpoint_map: dict[str, dict[str, Any]] = {}
+    for tool_name, mapping in endpoints.items():
+        if not isinstance(tool_name, str) or not isinstance(mapping, dict):
+            raise ValueError("Each REST mapping entry must be keyed by tool name")
+        if "method" not in mapping or "path" not in mapping:
+            raise ValueError(f"REST mapping for {tool_name} requires method and path")
+        endpoint_map[tool_name] = dict(mapping)
+
+    return endpoint_map
+
+
+def merge_endpoint_maps(
+    base: dict[str, dict[str, Any]],
+    override: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Merge endpoint mappings while preserving default tools."""
+    merged = deepcopy(base)
+    for tool_name, mapping in override.items():
+        current = merged.get(tool_name, {})
+        merged[tool_name] = {**current, **mapping}
+    return merged
+
+
 class RestConnector(MESConnector):
     """REST API based MES connector.
 
@@ -118,8 +157,27 @@ class RestConnector(MESConnector):
         endpoint_map: dict[str, dict[str, Any]] | None = None,
     ) -> None:
         super().__init__(config)
-        self.endpoint_map = endpoint_map or DEFAULT_ENDPOINT_MAP
+        self.endpoint_map = endpoint_map or self._load_configured_endpoint_map()
         self._client: httpx.AsyncClient | None = None
+
+    def _load_configured_endpoint_map(self) -> dict[str, dict[str, Any]]:
+        """Resolve endpoint mappings from config.extra or fall back to defaults."""
+        configured = self.config.extra.get("endpoint_map")
+        if configured:
+            if not isinstance(configured, dict):
+                raise ValueError("config.extra['endpoint_map'] must be a dict")
+            return merge_endpoint_maps(DEFAULT_ENDPOINT_MAP, configured)
+
+        mapping_path = (
+            self.config.extra.get("endpoint_mapping_path")
+            or self.config.extra.get("mapping_path")
+        )
+        if not mapping_path:
+            return deepcopy(DEFAULT_ENDPOINT_MAP)
+
+        loaded = load_endpoint_map(str(mapping_path))
+        merge_defaults = self.config.extra.get("merge_default_endpoint_map", True)
+        return merge_endpoint_maps(DEFAULT_ENDPOINT_MAP, loaded) if merge_defaults else loaded
 
     def _build_headers(self) -> dict[str, str]:
         """Build HTTP headers with authentication."""

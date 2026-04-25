@@ -1,14 +1,12 @@
-# Session Isolation and Persistence
+# 会话隔离与持久化
 
-ManuGent now separates runtime session state from durable memory.
+ManuGent 将运行时会话状态和可持久化 memory 分开处理。
 
-## Why It Matters
+## 为什么重要
 
-An MES Agent may be used by production supervisors, quality engineers, equipment
-engineers, and managers at the same time. Their conversations must not share
-private context by accident.
+MES Agent 会被班长、质量工程师、设备工程师和管理者同时使用。不同角色的对话上下文不能互相串线，但历史异常、工厂事实和审计记录又需要沉淀下来。
 
-The API therefore uses:
+因此 API 使用：
 
 ```text
 session_id -> isolated MESAgent -> isolated conversation history
@@ -17,30 +15,30 @@ session_id -> memory scope -> durable audit/memory records
 
 ## Session Manager
 
-Implemented in:
+实现位置：
 
 ```text
 src/manugent/agent/session.py
 ```
 
-`AgentSessionManager` creates one `MESAgent` per `session_id`.
+`AgentSessionManager` 为每个 `session_id` 创建独立 `MESAgent`。
 
 ```python
 manager.get("quality-shift-a")  # independent history
 manager.get("equipment-shift-b")  # independent history
 ```
 
-If a request omits `session_id`, it uses `default`.
+请求不传 `session_id` 时使用 `default`。
 
 ## SQLite Memory Store
 
-Implemented in:
+实现位置：
 
 ```text
 src/manugent/memory/sqlite.py
 ```
 
-The SQLite backend stores:
+SQLite backend 存储：
 
 - `record_id`
 - `layer`
@@ -52,25 +50,43 @@ The SQLite backend stores:
 - `confidence`
 - timestamps
 
-Default path:
+默认路径：
 
 ```text
 data/manugent-memory.sqlite3
 ```
 
-Override with:
+可通过环境变量覆盖：
 
 ```bash
 MEMORY_DB_PATH=/path/to/manugent-memory.sqlite3
 ```
 
-Run the demo:
+运行演示：
 
 ```bash
 PYTHONPATH=src python3 examples/demo_sqlite_memory.py
 ```
 
-## API Behavior
+## Workflow Report Persistence
+
+RCA workflow 完成后会把报告写入 episodic memory：
+
+```text
+yield_drop report -> MemoryLayer.EPISODIC -> tags: incident_report / line_id / yield
+```
+
+这样下一次分析同一条产线时，workflow 会把历史 RCA 报告作为 memory evidence 纳入证据链。
+
+持久化内容包括：
+
+- 报告结论和置信度
+- 完整 `report.to_dict()` 元数据
+- evidence 数量
+- recommendation 数量
+- memory scope
+
+## API 行为
 
 `POST /chat` accepts:
 
@@ -93,10 +109,9 @@ PYTHONPATH=src python3 examples/demo_sqlite_memory.py
 
 `POST /chat/clear?session_id=morning-shift` clears one session.
 
-## Current Limitations
+## 当前限制
 
-- Session state is in-process; multiple API replicas need a shared session backend.
-- SQLite search is keyword-based, not vector retrieval.
-- Memory scopes are session-oriented today; future versions should include
-  `factory_id`, `line_id`, `role`, and `user_id`.
-- API authentication is still a next milestone.
+- Session state 仍在进程内，多副本部署需要共享 session backend。
+- SQLite search 是关键词检索，不是向量检索。
+- Memory scope 当前偏 session 维度，后续应扩展 `factory_id`、`line_id`、`role`、`user_id`。
+- API authentication 仍是后续增强项。

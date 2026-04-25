@@ -77,6 +77,7 @@ class MESSettings(BaseSettings):
     mes_username: str = Field(default="", alias="MES_USERNAME")
     mes_password: str = Field(default="", alias="MES_PASSWORD")
     mes_timeout: int = Field(default=30, alias="MES_TIMEOUT")
+    mes_mapping_path: str = Field(default="", alias="MES_MAPPING_PATH")
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

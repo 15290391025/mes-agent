@@ -1,0 +1,31 @@
+# ManuGent REST connector mapping example.
+#
+# Use MES_MAPPING_PATH=configs/rest-mapping.example.yaml to map ManuGent tools
+# onto an existing MES REST API without changing Python code.
+tools:
+  query_production_data:
+    method: GET
+    path: /api/v1/production/metrics
+    param_map:
+      line_id: lineCode
+      metric: metric
+      time_range: range
+      granularity: bucket
+    response_path: result.data
+
+  get_quality_records:
+    method: GET
+    path: /api/v1/quality/defects
+    param_map:
+      line_id: lineCode
+      defect_type: defectType
+      time_range: range
+    response_path: result.items
+
+  get_equipment_history:
+    method: GET
+    path: /api/v1/equipment/{equipment_id}/events
+    param_map:
+      equipment_id: equipment_id
+      days: days
+    response_path: result.items

@@ -104,6 +104,39 @@ def test_rest_connector_path_params_mapping():
     assert mapping["param_map"]["equipment_id"] == "equipment_id"
 
 
+def test_rest_connector_loads_yaml_mapping(tmp_path):
+    """Test REST connector can load endpoint mapping from YAML."""
+    from manugent.connector.base import MESConnectionConfig
+    from manugent.connector.rest import RestConnector
+
+    mapping_path = tmp_path / "rest-mapping.yaml"
+    mapping_path.write_text(
+        """
+tools:
+  query_production_data:
+    method: GET
+    path: /api/kpi
+    param_map:
+      line_id: lineCode
+      metric: metricCode
+    response_path: result.data
+""",
+        encoding="utf-8",
+    )
+    connector = RestConnector(
+        MESConnectionConfig(
+            mes_type="rest",
+            base_url="http://mes/api",
+            extra={"endpoint_mapping_path": str(mapping_path)},
+        )
+    )
+
+    mapping = connector.endpoint_map["query_production_data"]
+    assert mapping["path"] == "/api/kpi"
+    assert mapping["param_map"]["line_id"] == "lineCode"
+    assert connector.endpoint_map["query_wip"]["path"] == "/production/wip"
+
+
 def test_agent_response():
     """Test AgentResponse dataclass."""
     from manugent.agent.core import AgentResponse
@@ -234,6 +267,36 @@ async def test_root_cause_workflow_evidence_chain():
     assert "良率下降" in report.finding
     assert any("当前良率" in item.summary for item in report.evidence)
     assert any("隔离物料批次" in item.action for item in report.recommendations)
+
+
+@pytest.mark.asyncio
+async def test_root_cause_workflow_persists_report_memory():
+    """Test RCA workflow writes completed reports into episodic memory."""
+    from manugent.connector.demo import DemoMESConnector
+    from manugent.memory import InMemoryMemoryStore, MemoryLayer
+    from manugent.workflows import RootCauseWorkflow
+
+    memory = InMemoryMemoryStore()
+    connector = DemoMESConnector()
+    await connector.connect()
+    workflow = RootCauseWorkflow(
+        connector,
+        memory_store=memory,
+        memory_scope="factory-a",
+    )
+
+    report = await workflow.analyze_yield_drop("SMT-03")
+    records = memory.search(
+        "SMT-03 yield",
+        layer=MemoryLayer.EPISODIC,
+        scope="factory-a",
+        limit=5,
+    )
+
+    persisted = next(record for record in records if "incident_report" in record.tags)
+    assert persisted.metadata["report"]["line_id"] == "SMT-03"
+    assert persisted.metadata["evidence_count"] == len(report.evidence)
+    assert persisted.confidence == report.confidence
 
 
 @pytest.mark.asyncio

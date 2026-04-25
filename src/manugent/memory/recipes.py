@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from manugent.memory.base import MemoryLayer, MemoryRecord, MemoryStore, MemoryWritePolicy
+from manugent.models import IncidentReport
 
 
 def remember_factory_fact(
@@ -43,6 +44,34 @@ def remember_incident(
             tags=tags or ["incident"],
             policy=MemoryWritePolicy.INFERRED,
             confidence=confidence,
+        )
+    )
+
+
+def remember_incident_report(
+    store: MemoryStore,
+    report: IncidentReport,
+    *,
+    scope: str = "default",
+) -> MemoryRecord:
+    """Store a completed RCA report for future incident correlation."""
+    content = (
+        f"RCA报告: {report.line_id} {report.incident_type} yield 良率; "
+        f"结论: {report.finding}; 置信度: {report.confidence}"
+    )
+    return store.add(
+        MemoryRecord(
+            content=content,
+            layer=MemoryLayer.EPISODIC,
+            scope=scope,
+            tags=["incident_report", report.incident_type, report.line_id, "yield"],
+            metadata={
+                "report": report.to_dict(),
+                "evidence_count": len(report.evidence),
+                "recommendation_count": len(report.recommendations),
+            },
+            policy=MemoryWritePolicy.INFERRED,
+            confidence=report.confidence,
         )
     )
 

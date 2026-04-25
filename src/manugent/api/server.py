@@ -128,6 +128,7 @@ async def lifespan(app: FastAPI):
         auth_username=_settings.mes.mes_username,
         auth_password=_settings.mes.mes_password,
         timeout=_settings.mes.mes_timeout,
+        extra={"endpoint_mapping_path": _settings.mes.mes_mapping_path},
     )
     memory_store = SQLiteMemoryStore(_settings.db.memory_db_path)
     _approval_queue = ApprovalQueue()

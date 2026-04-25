@@ -36,6 +36,7 @@ ManuGent 方式：
 | 根因分析工作流 | RCA workflow 生成 production / quality / material / equipment / memory 证据链 |
 | LangGraph 编排 | 把 RCA 拆成 query_production → query_quality → query_equipment → build_evidence → build_report |
 | 记忆架构 | 参考 ChatGPT 记忆逻辑，映射为 session、incident、factory fact、preference、audit |
+| REST 适配 | 通过 YAML 把标准 MES tools 映射到企业现有 REST API |
 | 会话隔离 | API `session_id` 对应独立 Agent history 和 memory scope |
 | 安全边界 | read-only 默认执行，approval/restricted 工具进入企业审批边界 |
 | 审计能力 | 工具调用、参数、安全级别、结果摘要写入 audit memory |
@@ -152,6 +153,7 @@ curl -X POST http://localhost:8000/query \\
 - [架构介绍图](docs/ARCHITECTURE_DIAGRAM.md)
 - [MES 领域模型](docs/MES_DOMAIN_MODEL.md)
 - [根因分析工作流](docs/ROOT_CAUSE_WORKFLOW.md)
+- [REST Connector YAML 映射](docs/REST_CONNECTOR_MAPPING.md)
 - [记忆、会话和持久化](docs/SESSION_AND_PERSISTENCE.md)
 - [Agent 安全边界](docs/SECURITY_MODEL.md)
 - [Demo 场景说明](docs/DEMO_SCENARIOS.md)
@@ -169,8 +171,10 @@ curl -X POST http://localhost:8000/query \\
 - Evidence Chain
 - Memory model
 - SQLite memory persistence
+- Workflow report memory persistence
 - Session isolation
 - Audit memory
+- REST connector YAML mapping
 - Optional API token
 - External approval boundary skeleton
 - Workflow API endpoint
@@ -178,7 +182,6 @@ curl -X POST http://localhost:8000/query \\
 
 仍可继续增强：
 
-- REST connector YAML mapping
 - LangGraph 条件路由和多 Agent supervisor
 - 企业审批系统适配（MES/BPM/Lark/自研系统）
 - 更完整的 Web UI
