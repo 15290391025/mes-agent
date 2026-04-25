@@ -9,9 +9,9 @@ DEMO_HTML = """<!doctype html>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
   <style>
     :root {
-      --void: #0b0f0d;
-      --glass: rgba(17, 25, 22, 0.74);
-      --line: rgba(217, 228, 222, 0.14);
+      --void: #0e1110;
+      --glass: rgba(24, 30, 27, 0.7);
+      --line: rgba(232, 238, 234, 0.12);
       --text: #f5f7f4;
       --muted: #9aa7a0;
       --cyan: #10a37f;
@@ -29,10 +29,9 @@ DEMO_HTML = """<!doctype html>
       min-height: 100vh;
       color: var(--text);
       background:
-        radial-gradient(circle at 50% -12%, rgba(16, 163, 127, 0.18), transparent 34rem),
-        radial-gradient(circle at 16% 8%, rgba(255, 255, 255, 0.08), transparent 28rem),
-        radial-gradient(circle at 84% 12%, rgba(214, 95, 95, 0.12), transparent 24rem),
-        linear-gradient(180deg, #0b0f0d 0%, #111915 56%, #0b0f0d 100%);
+        radial-gradient(circle at 50% -14%, rgba(16, 163, 127, 0.14), transparent 34rem),
+        radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.06), transparent 28rem),
+        linear-gradient(180deg, #0e1110 0%, #151a17 58%, #0e1110 100%);
       font-family: "Segoe UI", "Noto Sans SC", system-ui, sans-serif;
       overflow-x: hidden;
     }
@@ -44,8 +43,8 @@ DEMO_HTML = """<!doctype html>
       z-index: 0;
       pointer-events: none;
       background:
-        linear-gradient(rgba(16, 163, 127, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(16, 163, 127, 0.04) 1px, transparent 1px);
+        linear-gradient(rgba(232, 238, 234, 0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232, 238, 234, 0.022) 1px, transparent 1px);
       background-size: 64px 64px;
       mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 82%);
       transform: perspective(900px) rotateX(62deg) translateY(-20vh);
@@ -90,12 +89,12 @@ DEMO_HTML = """<!doctype html>
       height: 36px;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(16, 163, 127, 0.48);
+      border: 1px solid rgba(232, 238, 234, 0.16);
       border-radius: 12px;
       color: var(--cyan);
       background:
-        linear-gradient(145deg, rgba(16, 163, 127, 0.2), rgba(245, 247, 244, 0.12)),
-        rgba(255, 255, 255, 0.035);
+        linear-gradient(145deg, rgba(16, 163, 127, 0.18), rgba(245, 247, 244, 0.08)),
+        rgba(255, 255, 255, 0.03);
       box-shadow:
         0 0 34px rgba(16, 163, 127, 0.22),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -111,7 +110,7 @@ DEMO_HTML = """<!doctype html>
 
     .top-meta span {
       padding: 7px 10px;
-      border: 1px solid rgba(118, 194, 255, 0.18);
+      border: 1px solid rgba(232, 238, 234, 0.12);
       border-radius: 999px;
       color: #c4cec8;
       background: rgba(255, 255, 255, 0.035);
@@ -127,10 +126,10 @@ DEMO_HTML = """<!doctype html>
 
     h1 {
       margin: 0;
-      font-size: clamp(46px, 8vw, 96px);
-      line-height: 0.92;
-      letter-spacing: -0.08em;
-      font-weight: 850;
+      font-size: clamp(44px, 7vw, 84px);
+      line-height: 0.96;
+      letter-spacing: -0.07em;
+      font-weight: 760;
       text-wrap: balance;
       text-shadow: 0 0 44px rgba(16, 163, 127, 0.22);
     }
@@ -143,7 +142,7 @@ DEMO_HTML = """<!doctype html>
     }
 
     .subtitle {
-      max-width: 720px;
+      max-width: 680px;
       margin: 24px auto 0;
       color: var(--muted);
       font-size: 17px;
@@ -153,11 +152,11 @@ DEMO_HTML = """<!doctype html>
     .ask {
       max-width: 900px;
       margin: 34px auto 0;
-      border: 1px solid rgba(118, 194, 255, 0.24);
+      border: 1px solid rgba(232, 238, 234, 0.15);
       border-radius: 28px;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025)),
-        rgba(4, 9, 22, 0.76);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.02)),
+        rgba(20, 26, 23, 0.82);
       box-shadow:
         0 30px 90px rgba(0, 0, 0, 0.52),
         0 0 70px rgba(16, 163, 127, 0.12),
@@ -194,10 +193,10 @@ DEMO_HTML = """<!doctype html>
     .run {
       width: 86px;
       height: 60px;
-      border: 1px solid rgba(16, 163, 127, 0.42);
+      border: 1px solid rgba(16, 163, 127, 0.32);
       border-radius: 20px;
       color: #07110d;
-      background: linear-gradient(135deg, #f5f7f4, #10a37f 54%, #b7ebd9);
+      background: linear-gradient(135deg, #f5f7f4, #10a37f 58%, #c6eee0);
       cursor: pointer;
       font: 900 14px "Segoe UI", sans-serif;
       box-shadow:
@@ -219,7 +218,7 @@ DEMO_HTML = """<!doctype html>
     }
 
     .chip {
-      border: 1px solid rgba(118, 194, 255, 0.18);
+      border: 1px solid rgba(232, 238, 234, 0.12);
       border-radius: 999px;
       color: #c4cec8;
       background: rgba(255, 255, 255, 0.035);
@@ -241,7 +240,7 @@ DEMO_HTML = """<!doctype html>
     }
 
     .panel {
-      border: 1px solid rgba(118, 194, 255, 0.18);
+      border: 1px solid rgba(232, 238, 234, 0.12);
       border-radius: 28px;
       background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.018)),
@@ -257,15 +256,14 @@ DEMO_HTML = """<!doctype html>
       justify-content: space-between;
       gap: 14px;
       padding: 17px 20px;
-      border-bottom: 1px solid rgba(118, 194, 255, 0.14);
+      border-bottom: 1px solid rgba(232, 238, 234, 0.1);
     }
 
     .panel-head h2 {
       margin: 0;
       font-size: 14px;
-      font-weight: 850;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
+      font-weight: 760;
+      letter-spacing: -0.02em;
     }
 
     .meta {
@@ -480,11 +478,11 @@ DEMO_HTML = """<!doctype html>
 
     .item {
       padding: 15px;
-      border: 1px solid rgba(118, 194, 255, 0.16);
+      border: 1px solid rgba(232, 238, 234, 0.1);
       border-radius: 18px;
       background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
-        rgba(5, 12, 27, 0.74);
+        rgba(18, 24, 21, 0.74);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
@@ -560,17 +558,17 @@ DEMO_HTML = """<!doctype html>
         <div>ManuGent</div>
       </div>
       <div class="top-meta">
-        <span>MES Node Line</span>
+        <span>MES Line Map</span>
         <span>LangGraph RCA</span>
-        <span>AI Evidence Overlay</span>
+        <span>Evidence Overlay</span>
       </div>
     </header>
 
     <section class="hero">
-      <h1>Ask the MES.<br><strong>See the line as nodes.</strong></h1>
+      <h1>Ask the MES.<br><strong>See the line.</strong></h1>
       <p class="subtitle">
         用一句自然语言询问现场，ManuGent 将良率、缺陷、物料批次、设备告警和历史记忆
-        投射到立体产线节点上，直接看到问题发生在哪一段流程。
+        映射到产线节点上，直接看到问题发生在哪一段流程。
       </p>
     </section>
 
@@ -598,7 +596,7 @@ DEMO_HTML = """<!doctype html>
     <section id="answer" class="answer">
       <article class="panel">
         <div class="empty">
-          输入 MES 现场问题后，系统会生成 3D 产线视图，并把异常、证据和建议挂到设备节点上。
+          输入 MES 现场问题后，系统会点亮产线节点，并把异常、证据和建议挂到对应工序上。
         </div>
       </article>
     </section>
@@ -768,8 +766,8 @@ DEMO_HTML = """<!doctype html>
 
         <article class="panel">
           <div class="panel-head">
-            <h2>3D MES 流程节点</h2>
-            <span class="meta">异常证据会贴到对应立体设备节点</span>
+            <h2>MES 流程节点</h2>
+            <span class="meta">异常证据会贴到对应工序节点</span>
           </div>
           <div class="line-wrap">
             <div class="line-stage">${renderLineMap(data)}</div>
