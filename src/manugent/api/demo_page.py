@@ -1,26 +1,24 @@
 """HTML demo page for ManuGent."""
 
-DEMO_HTML = """
-<!doctype html>
+DEMO_HTML = """<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ManuGent MES Agent Command Center</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ManuGent MES Agent</title>
   <style>
     :root {
-      --bg: #111816;
-      --panel: rgba(244, 237, 216, 0.92);
-      --panel-strong: #fbf4df;
-      --ink: #14201c;
-      --muted: #63716a;
-      --line: rgba(32, 48, 42, 0.18);
-      --green: #0f7b55;
-      --green-deep: #084631;
-      --amber: #d98a2b;
-      --red: #b43c3c;
-      --blue: #315d87;
-      --shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
+      --bg: #f7f3ea;
+      --panel: #fffdf7;
+      --ink: #1b2622;
+      --muted: #6e7a73;
+      --line: #ded5c5;
+      --soft: #eee7d8;
+      --green: #17734f;
+      --amber: #c77a25;
+      --red: #b44444;
+      --blue: #315f86;
+      --shadow: 0 24px 70px rgba(30, 25, 16, 0.12);
     }
 
     * { box-sizing: border-box; }
@@ -29,29 +27,22 @@ DEMO_HTML = """
       margin: 0;
       min-height: 100vh;
       color: var(--ink);
-      font-family: "Aptos", "Noto Sans SC", "PingFang SC", sans-serif;
+      font-family: ui-serif, "Noto Serif SC", "Songti SC", Georgia, serif;
       background:
-        radial-gradient(circle at 12% 8%, rgba(217, 138, 43, 0.34), transparent 28rem),
-        radial-gradient(circle at 88% 4%, rgba(15, 123, 85, 0.32), transparent 26rem),
-        linear-gradient(135deg, #111816 0%, #27312c 48%, #d5c39d 100%);
+        radial-gradient(circle at 15% 5%, rgba(199, 122, 37, 0.18), transparent 26rem),
+        radial-gradient(circle at 85% 10%, rgba(23, 115, 79, 0.14), transparent 24rem),
+        linear-gradient(135deg, #f9f6ee 0%, #efe5d2 100%);
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-      background-size: 44px 44px;
-      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+    button,
+    textarea {
+      font: inherit;
     }
 
     .shell {
-      width: min(1240px, calc(100vw - 32px));
+      width: min(1160px, calc(100vw - 32px));
       margin: 0 auto;
-      padding: 28px 0 44px;
+      padding: 28px 0 48px;
     }
 
     .topbar {
@@ -59,380 +50,386 @@ DEMO_HTML = """
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      color: #f8f1dc;
-      margin-bottom: 18px;
+      margin-bottom: 36px;
+      color: #37443e;
+      font-family: ui-sans-serif, "Noto Sans SC", system-ui, sans-serif;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      letter-spacing: -0.03em;
     }
 
     .mark {
-      width: 38px;
-      height: 38px;
+      width: 30px;
+      height: 30px;
       display: grid;
       place-items: center;
-      color: #f9f1d7;
-      background: linear-gradient(135deg, var(--green), var(--amber));
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
-    }
-
-    .status {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      color: #fff8e8;
+      background: var(--green);
+      border-radius: 10px;
       font-size: 13px;
+      box-shadow: 0 10px 24px rgba(23, 115, 79, 0.24);
     }
 
-    .status span {
-      padding: 8px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(14px);
+    .topbar span {
+      color: var(--muted);
+      font-size: 13px;
     }
 
     .hero {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      background:
-        linear-gradient(135deg, rgba(251, 244, 223, 0.96), rgba(235, 218, 177, 0.9)),
-        radial-gradient(circle at 80% 18%, rgba(15, 123, 85, 0.18), transparent 24rem);
-      box-shadow: var(--shadow);
-      padding: clamp(26px, 4vw, 54px);
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      right: -80px;
-      top: -110px;
-      width: 340px;
-      height: 340px;
-      border: 1px solid rgba(15, 123, 85, 0.22);
-      border-radius: 50%;
-      box-shadow: inset 0 0 0 42px rgba(15, 123, 85, 0.06);
-    }
-
-    .eyebrow {
-      color: var(--green);
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      margin-bottom: 14px;
+      text-align: center;
+      margin: 0 auto 26px;
+      max-width: 860px;
     }
 
     h1 {
-      max-width: 880px;
       margin: 0;
-      font-family: "Aptos Display", "Noto Serif SC", serif;
-      font-size: clamp(44px, 7vw, 92px);
-      line-height: 0.94;
+      font-size: clamp(42px, 7vw, 78px);
+      line-height: 0.96;
       letter-spacing: -0.07em;
+      font-weight: 760;
     }
 
-    .tagline {
-      max-width: 780px;
-      margin: 22px 0 0;
-      color: #43514a;
-      font-size: clamp(16px, 2vw, 20px);
+    .subtitle {
+      max-width: 680px;
+      margin: 18px auto 0;
+      color: var(--muted);
+      font-size: 18px;
       line-height: 1.8;
     }
 
-    .hero-grid {
+    .ask-card {
+      position: sticky;
+      top: 16px;
+      z-index: 2;
+      margin: 0 auto;
+      max-width: 900px;
+      padding: 12px;
+      border: 1px solid rgba(39, 48, 43, 0.12);
+      border-radius: 28px;
+      background: rgba(255, 253, 247, 0.88);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .composer {
       display: grid;
-      grid-template-columns: 1fr 360px;
-      gap: 26px;
-      margin-top: 28px;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
       align-items: end;
     }
 
-    .pill-row {
+    textarea {
+      width: 100%;
+      min-height: 62px;
+      max-height: 180px;
+      resize: vertical;
+      border: 0;
+      outline: 0;
+      padding: 16px 18px;
+      color: var(--ink);
+      background: transparent;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .run-button {
+      min-width: 112px;
+      height: 54px;
+      border: 0;
+      border-radius: 18px;
+      color: #fff8e8;
+      background: linear-gradient(135deg, var(--green), #0c4f36);
+      cursor: pointer;
+      font-family: ui-sans-serif, "Noto Sans SC", system-ui, sans-serif;
+      font-weight: 800;
+      box-shadow: 0 14px 26px rgba(23, 115, 79, 0.22);
+    }
+
+    .run-button:disabled {
+      cursor: wait;
+      opacity: 0.62;
+    }
+
+    .examples {
       display: flex;
+      gap: 8px;
       flex-wrap: wrap;
-      gap: 10px;
+      padding: 2px 8px 8px;
+      font-family: ui-sans-serif, "Noto Sans SC", system-ui, sans-serif;
     }
 
-    .pill {
-      padding: 9px 12px;
-      border: 1px solid rgba(20, 32, 28, 0.14);
-      background: rgba(255, 255, 255, 0.42);
-      color: #33433c;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .hero-card {
-      position: relative;
-      z-index: 1;
-      background: rgba(20, 32, 28, 0.9);
-      color: #f9f1d7;
-      padding: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-    }
-
-    .hero-card .label {
-      color: #b8c8bd;
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fffaf0;
+      color: #58645e;
+      padding: 7px 10px;
+      cursor: pointer;
       font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
     }
 
-    .hero-card .value {
-      margin-top: 10px;
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
+    .chip:hover {
+      color: var(--green);
+      border-color: rgba(23, 115, 79, 0.32);
     }
 
-    .layout {
+    .answer {
       display: grid;
-      grid-template-columns: 410px 1fr;
       gap: 18px;
-      margin-top: 18px;
+      margin-top: 34px;
     }
 
     .panel {
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      background: var(--panel);
-      box-shadow: var(--shadow);
-      padding: 20px;
+      border: 1px solid rgba(39, 48, 43, 0.12);
+      border-radius: 30px;
+      background: rgba(255, 253, 247, 0.78);
+      box-shadow: 0 16px 46px rgba(30, 25, 16, 0.08);
+      overflow: hidden;
     }
 
-    .panel.dark {
-      color: #f8f1dc;
-      background: rgba(15, 24, 21, 0.86);
-    }
-
-    .section-title {
+    .panel-head {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 22px;
+      border-bottom: 1px solid rgba(39, 48, 43, 0.09);
+      font-family: ui-sans-serif, "Noto Sans SC", system-ui, sans-serif;
     }
 
-    h2 {
+    .panel-head h2 {
       margin: 0;
-      font-size: 18px;
+      font-size: 16px;
       letter-spacing: -0.02em;
     }
 
-    .hint {
+    .meta {
       color: var(--muted);
       font-size: 13px;
-      line-height: 1.6;
     }
 
-    label {
-      display: block;
-      margin: 14px 0 8px;
-      color: #31423b;
-      font-size: 13px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    input,
-    textarea,
-    select,
-    button {
-      width: 100%;
-      border: 1px solid var(--line);
-      color: var(--ink);
-      background: rgba(255, 255, 255, 0.72);
-      padding: 13px 14px;
-      font: inherit;
-      outline: none;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: rgba(15, 123, 85, 0.66);
-      box-shadow: 0 0 0 4px rgba(15, 123, 85, 0.1);
-    }
-
-    textarea {
-      min-height: 124px;
-      resize: vertical;
-      line-height: 1.6;
-    }
-
-    button {
-      margin-top: 16px;
-      border: 0;
-      color: #fff8e8;
-      background: linear-gradient(135deg, var(--green), var(--green-deep));
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 16px 34px rgba(15, 123, 85, 0.28);
-    }
-
-    button:hover { transform: translateY(-1px); }
-    button:disabled { cursor: wait; filter: grayscale(0.4); opacity: 0.74; }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .metric {
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.58);
-      border: 1px solid rgba(20, 32, 28, 0.12);
-    }
-
-    .metric small {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .metric strong {
-      display: block;
-      margin-top: 8px;
-      font-size: 26px;
+    .summary {
+      padding: 24px;
+      font-size: clamp(20px, 2.4vw, 30px);
+      line-height: 1.55;
       letter-spacing: -0.04em;
     }
 
-    .workflow {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-bottom: 18px;
+    .line-map {
+      padding: 24px;
     }
 
-    .step {
+    .line-track {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 12px;
       position: relative;
-      min-height: 74px;
-      padding: 12px;
-      color: #31423b;
-      background: rgba(255, 255, 255, 0.48);
-      border: 1px solid rgba(20, 32, 28, 0.12);
+    }
+
+    .station {
+      position: relative;
+      min-height: 176px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(246, 238, 220, 0.72));
+    }
+
+    .station::after {
+      content: "";
+      position: absolute;
+      top: 42px;
+      right: -18px;
+      width: 24px;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .station:last-child::after {
+      display: none;
+    }
+
+    .station.issue {
+      border-color: rgba(180, 68, 68, 0.5);
+      background:
+        radial-gradient(circle at 80% 10%, rgba(180, 68, 68, 0.18), transparent 7rem),
+        linear-gradient(180deg, #fffdf7, #f6eadb);
+    }
+
+    .station.warning {
+      border-color: rgba(199, 122, 37, 0.5);
+      background:
+        radial-gradient(circle at 80% 10%, rgba(199, 122, 37, 0.18), transparent 7rem),
+        linear-gradient(180deg, #fffdf7, #f6eadb);
+    }
+
+    .station.ok {
+      border-color: rgba(23, 115, 79, 0.24);
+    }
+
+    .station-code {
+      color: var(--muted);
+      font-family: ui-sans-serif, "Noto Sans SC", system-ui, sans-serif;
       font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .station-name {
+      margin-top: 8px;
+      font-size: 20px;
+      font-weight: 760;
+      letter-spacing: -0.04em;
+    }
+
+    .station-desc {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .badge {
+      display: inline-flex;
+      margin-top: 12px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      font-family: ui-sans-serif, "Noto Sans SC", system-ui, sans-serif;
+      font-size: 11px;
       font-weight: 800;
     }
 
-    .step.active {
-      color: #fff8e8;
-      background: linear-gradient(135deg, var(--green), #1d6a84);
+    .badge.issue {
+      color: #7d2020;
+      background: rgba(180, 68, 68, 0.13);
     }
 
-    .step span {
-      display: block;
-      margin-bottom: 8px;
-      opacity: 0.72;
-      font-size: 11px;
+    .badge.warning {
+      color: #814907;
+      background: rgba(199, 122, 37, 0.14);
     }
 
-    .finding {
-      border-left: 6px solid var(--amber);
-      background: rgba(255, 247, 230, 0.88);
-      padding: 18px;
-      line-height: 1.75;
-      font-size: 16px;
+    .badge.ok {
+      color: #0b573b;
+      background: rgba(23, 115, 79, 0.12);
     }
 
-    .cards {
+    .node-note {
+      margin-top: 12px;
+      color: #3d4a44;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .details {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .list {
+      padding: 20px 22px 22px;
+      display: grid;
       gap: 12px;
-      margin-top: 14px;
     }
 
-    .evidence-card,
-    .action-card {
-      background: rgba(255, 255, 255, 0.64);
-      border: 1px solid rgba(20, 32, 28, 0.12);
+    .item {
       padding: 15px;
-      min-height: 120px;
+      border: 1px solid rgba(39, 48, 43, 0.1);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.52);
     }
 
-    .type {
+    .item-type {
       color: var(--green);
+      font-family: ui-sans-serif, "Noto Sans SC", system-ui, sans-serif;
       font-size: 12px;
       font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 9px;
+      margin-bottom: 7px;
     }
 
-    .approval { color: var(--red); }
+    .item-type.boundary {
+      color: var(--red);
+    }
 
-    .summary {
+    .item-text {
+      color: #304039;
       line-height: 1.65;
-      color: #26352f;
-    }
-
-    .action-card {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 10px;
-      min-height: auto;
-    }
-
-    .raw {
-      max-height: 420px;
-      overflow: auto;
-      margin: 0;
-      padding: 16px;
-      color: #d9f7df;
-      background: #0d1512;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      font-size: 12px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
+      font-size: 14px;
     }
 
     .empty {
-      display: grid;
-      place-items: center;
-      min-height: 280px;
+      padding: 44px 24px;
       color: var(--muted);
       text-align: center;
-      border: 1px dashed rgba(20, 32, 28, 0.18);
-      background: rgba(255, 255, 255, 0.28);
+      line-height: 1.8;
     }
 
     .toast {
       display: none;
-      margin-top: 12px;
-      padding: 12px;
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      max-width: min(560px, calc(100vw - 32px));
+      padding: 12px 16px;
+      border-radius: 16px;
       color: #fff8e8;
-      background: rgba(180, 60, 60, 0.92);
+      background: rgba(180, 68, 68, 0.94);
+      box-shadow: 0 20px 50px rgba(180, 68, 68, 0.26);
+      z-index: 20;
     }
 
-    .toast.show { display: block; }
+    .toast.show {
+      display: block;
+    }
 
     @media (max-width: 980px) {
-      .hero-grid,
-      .layout { grid-template-columns: 1fr; }
-      .workflow { grid-template-columns: 1fr 1fr; }
+      .line-track {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .station::after {
+        display: none;
+      }
+
+      .details {
+        grid-template-columns: 1fr;
+      }
     }
 
-    @media (max-width: 680px) {
-      .shell { width: min(100vw - 20px, 1240px); padding-top: 14px; }
-      .topbar { align-items: flex-start; flex-direction: column; }
-      .metrics,
-      .cards,
-      .workflow { grid-template-columns: 1fr; }
-      .hero,
-      .panel { padding: 18px; }
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100vw - 20px, 1160px);
+        padding-top: 18px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 24px;
+      }
+
+      .composer {
+        grid-template-columns: 1fr;
+      }
+
+      .run-button {
+        width: 100%;
+      }
+
+      .line-track {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -440,143 +437,124 @@ DEMO_HTML = """
   <div class="shell">
     <header class="topbar">
       <div class="brand">
-        <div class="mark">MG</div>
-        <div>ManuGent Command Center</div>
+        <div class="mark">M</div>
+        <div>ManuGent</div>
       </div>
-      <div class="status">
-        <span>MES Agent</span>
-        <span>LangGraph RCA</span>
-        <span>SQLite Memory</span>
-      </div>
+      <span>MES Agent · 自然语言分析 · 产线问题定位</span>
     </header>
 
     <section class="hero">
-      <div class="eyebrow">MES + Agent Reference Architecture</div>
-      <h1>把工厂现场数据变成可解释的 Agent 决策链路</h1>
-      <p class="tagline">
-        ManuGent 展示一个不侵入 MES 的 Agent 中间层：受控工具调用、证据链、
-        多层记忆、LangGraph 根因分析，以及面向企业系统的安全边界。
+      <h1>问一句话，看懂整条产线。</h1>
+      <p class="subtitle">
+        像 ChatGPT 一样输入问题，ManuGent 会查询 MES 数据，把异常、证据和建议
+        动态落到产线节点上。
       </p>
-      <div class="hero-grid">
-        <div class="pill-row">
-          <span class="pill">Manufacturing Tool Protocol</span>
-          <span class="pill">Evidence Chain</span>
-          <span class="pill">Session Memory</span>
-          <span class="pill">Audit Trail</span>
-          <span class="pill">External Approval Boundary</span>
-        </div>
-        <div class="hero-card">
-          <div class="label">Demo Scenario</div>
-          <div class="value">SMT-03 RCA</div>
-          <div class="hint" style="color:#cbd8ce;">
-            production + quality + material + equipment + memory
-          </div>
-        </div>
-      </div>
     </section>
 
-    <section class="layout">
-      <aside class="panel">
-        <div class="section-title">
-          <h2>运行根因分析</h2>
-          <span class="hint">无需真实 MES</span>
-        </div>
-
-        <label for="line">产线</label>
-        <select id="line">
-          <option value="SMT-03">SMT-03 · 贴片三线</option>
-          <option value="SMT-01">SMT-01 · 对照产线</option>
-          <option value="ASM-01">ASM-01 · 组装线</option>
-        </select>
-
-        <label for="range">时间窗口</label>
-        <select id="range">
-          <option value="24h">最近 24 小时</option>
-          <option value="7d">最近 7 天</option>
-          <option value="today">今天</option>
-        </select>
-
-        <label for="question">业务问题</label>
+    <section class="ask-card">
+      <div class="composer">
         <textarea id="question">SMT-03 最近 24 小时良率为什么下降？</textarea>
-
-        <button id="run-button" onclick="runRca()">运行 LangGraph RCA</button>
-        <div id="error" class="toast"></div>
-
-        <div style="margin-top:18px;" class="hint">
-          这个页面调用 <code>/workflows/root-cause/yield-drop</code>，展示 Agent
-          如何把 MES 数据组织成证据链，而不是让 LLM 自由猜测。
-        </div>
-      </aside>
-
-      <main class="panel">
-        <div class="metrics">
-          <div class="metric">
-            <small>Confidence</small>
-            <strong id="confidence">--</strong>
-          </div>
-          <div class="metric">
-            <small>Evidence</small>
-            <strong id="evidence-count">--</strong>
-          </div>
-          <div class="metric">
-            <small>Actions</small>
-            <strong id="action-count">--</strong>
-          </div>
-        </div>
-
-        <div class="workflow" id="workflow">
-          <div class="step"><span>01</span>Production</div>
-          <div class="step"><span>02</span>Quality</div>
-          <div class="step"><span>03</span>Equipment</div>
-          <div class="step"><span>04</span>Evidence</div>
-          <div class="step"><span>05</span>Report</div>
-        </div>
-
-        <div class="section-title">
-          <h2>分析结论</h2>
-          <span class="hint" id="line-context">等待运行</span>
-        </div>
-        <div id="finding" class="finding">
-          选择产线并运行 RCA，系统会查询良率、缺陷、物料批次、设备告警和历史记忆。
-        </div>
-
-        <div class="section-title" style="margin-top:20px;">
-          <h2>证据链</h2>
-          <span class="hint">typed evidence</span>
-        </div>
-        <div id="evidence" class="empty">
-          证据卡片会在分析完成后显示。
-        </div>
-      </main>
+        <button id="run-button" class="run-button" onclick="runRca()">分析</button>
+      </div>
+      <div class="examples">
+        <button class="chip" onclick="useExample('SMT-03 最近 24 小时良率为什么下降？')">
+          良率下降
+        </button>
+        <button class="chip" onclick="useExample('帮我分析 SMT-03 今天 AOI 缺陷集中在哪个环节')">
+          AOI 缺陷
+        </button>
+        <button class="chip" onclick="useExample('SMT-03 最近是不是设备和物料一起影响了质量？')">
+          设备 + 物料
+        </button>
+      </div>
     </section>
 
-    <section class="layout">
-      <div class="panel">
-        <div class="section-title">
-          <h2>建议动作</h2>
-          <span class="hint">advisory / boundary</span>
+    <section id="answer" class="answer">
+      <article class="panel">
+        <div class="empty">
+          输入一个 MES 现场问题后，系统会展示整条产线，并把问题和建议挂到对应节点。
         </div>
-        <div id="actions" class="empty">建议动作会在分析完成后显示。</div>
-      </div>
-
-      <div class="panel dark">
-        <div class="section-title">
-          <h2>原始响应</h2>
-          <span class="hint" style="color:#b8c8bd;">API JSON</span>
-        </div>
-        <pre id="raw" class="raw">{}</pre>
-      </div>
+      </article>
     </section>
   </div>
 
+  <div id="error" class="toast"></div>
+
   <script>
-    const workflowSteps = document.querySelectorAll(".step");
+    const stations = [
+      {
+        id: "printer",
+        code: "01",
+        name: "印刷",
+        desc: "锡膏印刷 / 批次输入",
+        evidenceTypes: ["material"]
+      },
+      {
+        id: "spi",
+        code: "02",
+        name: "SPI",
+        desc: "锡膏检测 / 早期质量信号",
+        evidenceTypes: ["production", "quality", "material"]
+      },
+      {
+        id: "mounter",
+        code: "03",
+        name: "贴片",
+        desc: "MOUNTER-03A / 吸嘴与飞达",
+        evidenceTypes: ["equipment"]
+      },
+      {
+        id: "reflow",
+        code: "04",
+        name: "回流焊",
+        desc: "温区稳定性 / 焊接窗口",
+        evidenceTypes: []
+      },
+      {
+        id: "aoi",
+        code: "05",
+        name: "AOI",
+        desc: "缺陷检出 / 良率结果",
+        evidenceTypes: ["quality", "production"]
+      },
+      {
+        id: "pack",
+        code: "06",
+        name: "包装",
+        desc: "放行 / 返工 / 出货",
+        evidenceTypes: []
+      }
+    ];
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function inferLineId(question) {
+      const match = question.match(/[A-Z]{2,5}-\\d{1,3}/i);
+      return match ? match[0].toUpperCase() : "SMT-03";
+    }
+
+    function inferTimeRange(question) {
+      if (question.includes("7天") || question.includes("一周")) return "7d";
+      if (question.includes("今天")) return "today";
+      return "24h";
+    }
+
+    function useExample(text) {
+      document.getElementById("question").value = text;
+      document.getElementById("question").focus();
+    }
 
     function setLoading(isLoading) {
       const button = document.getElementById("run-button");
       button.disabled = isLoading;
-      button.textContent = isLoading ? "分析中..." : "运行 LangGraph RCA";
-      workflowSteps.forEach(step => step.classList.toggle("active", isLoading));
+      button.textContent = isLoading ? "分析中" : "分析";
     }
 
     function setError(message) {
@@ -585,55 +563,119 @@ DEMO_HTML = """
       error.classList.toggle("show", Boolean(message));
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function stationStatus(station, evidence) {
+      const related = evidence.filter(item => station.evidenceTypes.includes(item.type));
+      if (!related.length) return { status: "ok", related };
+      if (related.some(item => ["quality", "equipment", "material"].includes(item.type))) {
+        return { status: "issue", related };
+      }
+      return { status: "warning", related };
     }
 
-    function renderReport(data, lineId, timeRange) {
-      workflowSteps.forEach(step => step.classList.add("active"));
-      document.getElementById("confidence").textContent =
-        `${Math.round((data.confidence || 0) * 100)}%`;
-      document.getElementById("evidence-count").textContent = data.evidence.length;
-      document.getElementById("action-count").textContent = data.recommendations.length;
-      document.getElementById("line-context").textContent = `${lineId} · ${timeRange}`;
-      document.getElementById("finding").textContent = data.finding;
-      document.getElementById("raw").textContent = JSON.stringify(data, null, 2);
+    function renderLineMap(data) {
+      const evidence = data.evidence || [];
+      return stations.map(station => {
+        const result = stationStatus(station, evidence);
+        const badgeText = {
+          ok: "运行链路",
+          warning: "指标波动",
+          issue: "问题关联"
+        }[result.status];
+        const note = result.related[0]?.summary || "当前问题未直接指向该节点。";
 
-      document.getElementById("evidence").className = "cards";
-      document.getElementById("evidence").innerHTML = data.evidence.map(item => `
-        <article class="evidence-card">
-          <div class="type">${escapeHtml(item.type)} · ${escapeHtml(item.source_tool)}</div>
-          <div class="summary">${escapeHtml(item.summary)}</div>
-        </article>
-      `).join("");
-
-      document.getElementById("actions").className = "";
-      document.getElementById("actions").innerHTML = data.recommendations.map(item => `
-        <article class="action-card">
-          <div class="type ${item.requires_approval ? "approval" : ""}">
-            ${item.requires_approval ? "企业审批边界" : "建议动作"} · ${escapeHtml(item.owner)}
+        return `
+          <div class="station ${result.status}">
+            <div class="station-code">${station.code} · ${station.id}</div>
+            <div class="station-name">${station.name}</div>
+            <div class="station-desc">${station.desc}</div>
+            <div class="badge ${result.status}">${badgeText}</div>
+            <div class="node-note">${escapeHtml(note)}</div>
           </div>
-          <div class="summary">${escapeHtml(item.action)}</div>
-          <div class="hint">${escapeHtml(item.rationale || "基于证据链生成")}</div>
-        </article>
+        `;
+      }).join("");
+    }
+
+    function renderEvidence(data) {
+      return (data.evidence || []).map(item => `
+        <div class="item">
+          <div class="item-type">${escapeHtml(item.type)} · ${escapeHtml(item.source_tool)}</div>
+          <div class="item-text">${escapeHtml(item.summary)}</div>
+        </div>
       `).join("");
+    }
+
+    function renderActions(data) {
+      return (data.recommendations || []).map(item => `
+        <div class="item">
+          <div class="item-type ${item.requires_approval ? "boundary" : ""}">
+            ${item.requires_approval ? "生产控制边界" : "建议动作"} · ${escapeHtml(item.owner)}
+          </div>
+          <div class="item-text">${escapeHtml(item.action)}</div>
+          <div class="item-text" style="color:var(--muted);margin-top:6px;">
+            ${escapeHtml(item.rationale || "基于当前证据链生成。")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderReport(data, question, lineId, timeRange) {
+      const confidence = Math.round((data.confidence || 0) * 100);
+      document.getElementById("answer").innerHTML = `
+        <article class="panel">
+          <div class="panel-head">
+            <h2>AI 分析结论</h2>
+            <span class="meta">${escapeHtml(lineId)} · ${escapeHtml(timeRange)}
+              · 置信度 ${confidence}%</span>
+          </div>
+          <div class="summary">${escapeHtml(data.finding)}</div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>产线定位图</h2>
+            <span class="meta">问题会落在对应工艺节点上</span>
+          </div>
+          <div class="line-map">
+            <div class="line-track">${renderLineMap(data)}</div>
+          </div>
+        </article>
+
+        <section class="details">
+          <article class="panel">
+            <div class="panel-head">
+              <h2>证据链</h2>
+              <span class="meta">${(data.evidence || []).length} 条</span>
+            </div>
+            <div class="list">${renderEvidence(data)}</div>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <h2>建议动作</h2>
+              <span class="meta">${(data.recommendations || []).length} 条</span>
+            </div>
+            <div class="list">${renderActions(data)}</div>
+          </article>
+        </section>
+      `;
     }
 
     async function runRca() {
-      const lineId = document.getElementById("line").value || "SMT-03";
-      const timeRange = document.getElementById("range").value || "24h";
+      const question = document.getElementById("question").value.trim();
+      const lineId = inferLineId(question);
+      const timeRange = inferTimeRange(question);
+
+      if (!question) {
+        setError("请先输入一个 MES 现场问题。");
+        return;
+      }
+
       setError("");
       setLoading(true);
 
       try {
         const response = await fetch("/workflows/root-cause/yield-drop", {
           method: "POST",
-          headers: {"Content-Type": "application/json"},
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             line_id: lineId,
             time_range: timeRange,
@@ -641,18 +683,21 @@ DEMO_HTML = """
           })
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        renderReport(data, lineId, timeRange);
+        renderReport(data, question, lineId, timeRange);
       } catch (error) {
-        setError(`RCA workflow 调用失败：${error.message}`);
+        setError(`分析失败：${error.message}`);
       } finally {
         setLoading(false);
       }
     }
+
+    document.getElementById("question").addEventListener("keydown", event => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+        runRca();
+      }
+    });
   </script>
 </body>
 </html>
