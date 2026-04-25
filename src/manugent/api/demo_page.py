@@ -8,29 +8,57 @@ DEMO_HTML = """<!doctype html>
   <title>ManuGent MES Agent</title>
   <style>
     :root {
-      --bg: #f7f7f8;
+      color-scheme: light;
+      --bg: #f7f5f0;
+      --bg-elevated: #fbfaf7;
       --surface: #ffffff;
-      --surface-soft: #f1f1f2;
-      --text: #1f1f1f;
-      --muted: #6f6f6f;
-      --border: #e3e3e3;
-      --accent: #10a37f;
-      --accent-soft: #e7f5ef;
-      --warning: #b7791f;
-      --warning-soft: #fff6df;
-      --danger: #c24141;
-      --danger-soft: #fff0f0;
-      --shadow: 0 18px 46px rgba(0, 0, 0, 0.08);
+      --surface-muted: #f2f0eb;
+      --text: #1d1b16;
+      --text-soft: #4e4a42;
+      --muted: #777165;
+      --border: #ded9cf;
+      --border-strong: #c6c0b5;
+      --primary: #0f766e;
+      --primary-strong: #0b4f49;
+      --primary-soft: #dff3ee;
+      --warning: #a16207;
+      --warning-soft: #fff2c7;
+      --danger: #b42318;
+      --danger-soft: #fde8e4;
+      --ink-shadow: 0 18px 50px rgba(32, 29, 23, 0.12);
+      --soft-shadow: 0 10px 30px rgba(32, 29, 23, 0.07);
+      --radius-lg: 30px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+      --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
 
     body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100dvh;
       color: var(--text);
-      background: var(--bg);
-      font-family: ui-sans-serif, "Noto Sans SC", system-ui, -apple-system, sans-serif;
+      background:
+        radial-gradient(circle at 16% 10%, rgba(15, 118, 110, 0.12), transparent 28rem),
+        radial-gradient(circle at 82% 2%, rgba(161, 98, 7, 0.10), transparent 22rem),
+        linear-gradient(180deg, #fbfaf7 0%, var(--bg) 52%, #efebe3 100%);
+      font-family:
+        "Noto Sans SC",
+        "PingFang SC",
+        "Microsoft YaHei",
+        ui-sans-serif,
+        system-ui,
+        sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
     }
 
     button,
@@ -38,328 +66,469 @@ DEMO_HTML = """<!doctype html>
       font: inherit;
     }
 
-    .app {
-      width: min(1080px, calc(100vw - 32px));
+    button {
+      touch-action: manipulation;
+    }
+
+    button:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid rgba(15, 118, 110, 0.28);
+      outline-offset: 3px;
+    }
+
+    .app-shell {
+      width: min(1180px, calc(100vw - 32px));
+      min-height: 100dvh;
       margin: 0 auto;
       padding: 24px 0 56px;
     }
 
-    .topbar {
+    .nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 78px;
-      color: var(--muted);
-      font-size: 14px;
+      margin-bottom: clamp(42px, 7vw, 92px);
     }
 
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 11px;
+      min-height: 44px;
       color: var(--text);
-      font-weight: 650;
+      font-weight: 720;
+      letter-spacing: -0.02em;
     }
 
-    .mark {
-      width: 30px;
-      height: 30px;
+    .brand-mark {
+      width: 34px;
+      height: 34px;
       display: grid;
       place-items: center;
-      border-radius: 9px;
-      color: #fff;
-      background: var(--accent);
-      font-size: 14px;
-      font-weight: 750;
+      border: 1px solid rgba(15, 118, 110, 0.24);
+      border-radius: 12px;
+      color: var(--primary-strong);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(223, 243, 238, 0.95));
+      box-shadow: inset 0 -8px 18px rgba(15, 118, 110, 0.08);
+      font-size: 13px;
     }
 
-    .top-meta {
+    .nav-meta {
       display: flex;
+      align-items: center;
+      justify-content: flex-end;
       gap: 8px;
       flex-wrap: wrap;
-      justify-content: flex-end;
     }
 
-    .top-meta span {
-      padding: 6px 10px;
-      border: 1px solid var(--border);
+    .pill {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid rgba(198, 192, 181, 0.78);
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.72);
+      color: var(--text-soft);
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(14px);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
     }
 
     .hero {
-      max-width: 780px;
+      width: min(820px, 100%);
       margin: 0 auto;
       text-align: center;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      margin: 0 auto 16px;
+      padding: 7px 12px;
+      border: 1px solid rgba(15, 118, 110, 0.2);
+      border-radius: 999px;
+      color: var(--primary-strong);
+      background: rgba(223, 243, 238, 0.72);
+      font-size: 13px;
+      font-weight: 680;
     }
 
     h1 {
       margin: 0;
       color: var(--text);
-      font-size: clamp(36px, 5.5vw, 58px);
-      line-height: 1.08;
-      letter-spacing: -0.055em;
-      font-weight: 650;
+      font-size: clamp(36px, 6vw, 68px);
+      line-height: 1.04;
+      letter-spacing: -0.065em;
+      font-weight: 760;
       text-wrap: balance;
     }
 
     .subtitle {
-      max-width: 620px;
+      width: min(650px, 100%);
       margin: 18px auto 0;
       color: var(--muted);
-      font-size: 16px;
-      line-height: 1.7;
+      font-size: clamp(15px, 2vw, 17px);
+      line-height: 1.8;
+      text-wrap: balance;
     }
 
     .composer {
-      max-width: 780px;
-      margin: 32px auto 0;
-      border: 1px solid var(--border);
-      border-radius: 26px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
+      width: min(820px, 100%);
+      margin: 34px auto 0;
+      border: 1px solid rgba(198, 192, 181, 0.72);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--ink-shadow);
       overflow: hidden;
+      backdrop-filter: blur(22px);
     }
 
-    .input-row {
+    .composer-main {
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: end;
-      gap: 10px;
-      padding: 10px;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .field-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
     }
 
     textarea {
       width: 100%;
-      min-height: 72px;
-      max-height: 180px;
+      min-height: 84px;
+      max-height: 210px;
       resize: vertical;
       border: 0;
+      border-radius: 20px;
       outline: 0;
       color: var(--text);
       background: transparent;
-      padding: 14px 16px;
+      padding: 16px 18px;
       font-size: 16px;
       line-height: 1.65;
     }
 
     textarea::placeholder {
-      color: #9a9a9a;
+      color: #9a9386;
     }
 
-    .run {
-      width: 44px;
-      height: 44px;
+    .send-button {
+      width: 52px;
+      height: 52px;
+      display: inline-grid;
+      place-items: center;
       border: 0;
-      border-radius: 14px;
+      border-radius: 18px;
       color: #fff;
       background: var(--text);
+      box-shadow: 0 10px 22px rgba(29, 27, 22, 0.18);
       cursor: pointer;
-      font-size: 18px;
-      font-weight: 750;
+      transition:
+        transform 180ms var(--ease),
+        background 180ms var(--ease),
+        opacity 180ms var(--ease);
     }
 
-    .run:disabled {
+    .send-button:hover {
+      background: #302d27;
+      transform: translateY(-1px);
+    }
+
+    .send-button:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .send-button:disabled {
       cursor: wait;
-      opacity: 0.45;
+      opacity: 0.48;
+      transform: none;
     }
 
-    .prompts {
+    .send-button svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.4;
+    }
+
+    .prompt-row {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      padding: 0 14px 14px;
+      padding: 0 16px 16px;
     }
 
-    .chip {
+    .prompt-chip {
+      min-height: 38px;
       border: 1px solid var(--border);
       border-radius: 999px;
-      color: var(--muted);
-      background: var(--surface);
-      padding: 7px 10px;
+      color: var(--text-soft);
+      background: rgba(242, 240, 235, 0.74);
+      padding: 8px 12px;
       cursor: pointer;
       font-size: 13px;
+      transition:
+        border-color 180ms var(--ease),
+        background 180ms var(--ease),
+        color 180ms var(--ease);
     }
 
-    .chip:hover {
+    .prompt-chip:hover {
+      border-color: var(--border-strong);
       color: var(--text);
-      background: var(--surface-soft);
+      background: #fff;
     }
 
-    .answer {
+    .response {
       display: grid;
-      gap: 16px;
-      margin: 34px auto 0;
-      max-width: 980px;
+      gap: 18px;
+      margin: 36px auto 0;
     }
 
     .panel {
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      background: var(--surface);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(198, 192, 181, 0.72);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: var(--soft-shadow);
       overflow: hidden;
+      backdrop-filter: blur(18px);
     }
 
     .panel-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
       padding: 16px 18px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(222, 217, 207, 0.72);
     }
 
-    .panel-head h2 {
+    .panel-title {
       margin: 0;
+      color: var(--text);
       font-size: 15px;
-      font-weight: 650;
+      font-weight: 720;
+      letter-spacing: -0.02em;
     }
 
-    .meta {
+    .panel-meta {
       color: var(--muted);
       font-size: 13px;
       text-align: right;
+      white-space: nowrap;
     }
 
-    .summary {
-      padding: 20px;
-      font-size: clamp(18px, 2vw, 25px);
-      line-height: 1.62;
+    .empty-state {
+      display: grid;
+      place-items: center;
+      min-height: 250px;
+      padding: 44px 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty-card {
+      width: min(520px, 100%);
+    }
+
+    .empty-title {
+      margin: 0 0 10px;
+      color: var(--text);
+      font-size: 20px;
+      font-weight: 720;
       letter-spacing: -0.035em;
     }
 
-    .line-wrap {
-      padding: 30px 20px 24px;
-      overflow-x: auto;
+    .empty-text {
+      margin: 0;
+      line-height: 1.8;
     }
 
-    .line-stage {
+    .summary {
+      padding: clamp(20px, 3vw, 28px);
+      color: var(--text);
+      font-size: clamp(19px, 2.4vw, 29px);
+      line-height: 1.62;
+      letter-spacing: -0.045em;
+    }
+
+    .confidence {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid rgba(15, 118, 110, 0.2);
+      border-radius: 999px;
+      color: var(--primary-strong);
+      background: var(--primary-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .line-section {
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .line-map {
       position: relative;
-      min-width: 920px;
       display: grid;
-      grid-template-columns: repeat(6, minmax(120px, 1fr));
-      gap: 18px;
-      padding-top: 6px;
+      grid-template-columns: repeat(6, minmax(108px, 1fr));
+      gap: 14px;
+      min-width: 940px;
+      padding: 22px 8px 4px;
     }
 
-    .line-stage::before {
+    .line-map::before {
       content: "";
       position: absolute;
-      left: 7%;
-      right: 7%;
-      top: 45px;
-      height: 3px;
+      left: 8%;
+      right: 8%;
+      top: 68px;
+      height: 2px;
       border-radius: 999px;
-      background: var(--border);
+      background:
+        linear-gradient(90deg, transparent, rgba(15, 118, 110, 0.26), transparent),
+        var(--border);
     }
 
     .station {
       position: relative;
+      z-index: 1;
       display: grid;
       justify-items: center;
-      gap: 14px;
-      z-index: 1;
+      gap: 13px;
+      animation: rise 420ms var(--ease) both;
+      animation-delay: calc(var(--i) * 42ms);
     }
 
-    .node-orb {
-      width: 86px;
-      height: 86px;
-      border: 1px solid var(--border);
-      border-radius: 50%;
+    .orb {
+      position: relative;
+      width: 92px;
+      height: 92px;
+      border: 1px solid rgba(198, 192, 181, 0.9);
+      border-radius: 999px;
       background:
-        radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.94), transparent 0.55rem),
-        radial-gradient(circle at 68% 76%, rgba(16, 163, 127, 0.26), transparent 2.5rem),
-        linear-gradient(145deg, #ffffff, #edf7f3);
+        radial-gradient(circle at 33% 26%, rgba(255, 255, 255, 0.98) 0 10px, transparent 11px),
+        radial-gradient(circle at 68% 72%, rgba(15, 118, 110, 0.20), transparent 38px),
+        linear-gradient(145deg, #ffffff, #ece8df);
       box-shadow:
-        0 14px 34px rgba(0, 0, 0, 0.08),
-        inset -12px -14px 24px rgba(0, 0, 0, 0.06),
-        inset 10px 12px 18px rgba(255, 255, 255, 0.9);
+        0 16px 34px rgba(32, 29, 23, 0.14),
+        inset 12px 12px 18px rgba(255, 255, 255, 0.95),
+        inset -14px -16px 22px rgba(32, 29, 23, 0.08);
     }
 
-    .station.issue .node-orb {
-      border-color: rgba(194, 65, 65, 0.35);
+    .orb::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.56);
+    }
+
+    .station.signal .orb {
+      border-color: rgba(161, 98, 7, 0.34);
       background:
-        radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.94), transparent 0.55rem),
-        radial-gradient(circle at 68% 76%, rgba(194, 65, 65, 0.3), transparent 2.5rem),
-        linear-gradient(145deg, #ffffff, #fff0f0);
+        radial-gradient(circle at 33% 26%, rgba(255, 255, 255, 0.98) 0 10px, transparent 11px),
+        radial-gradient(circle at 68% 72%, rgba(161, 98, 7, 0.24), transparent 38px),
+        linear-gradient(145deg, #fffdf7, #f5e7bd);
+    }
+
+    .station.issue .orb {
+      border-color: rgba(180, 35, 24, 0.34);
+      background:
+        radial-gradient(circle at 33% 26%, rgba(255, 255, 255, 0.98) 0 10px, transparent 11px),
+        radial-gradient(circle at 68% 72%, rgba(180, 35, 24, 0.25), transparent 38px),
+        linear-gradient(145deg, #fffefe, #f9d9d3);
       box-shadow:
-        0 14px 34px rgba(194, 65, 65, 0.14),
-        inset -12px -14px 24px rgba(0, 0, 0, 0.05);
+        0 18px 36px rgba(180, 35, 24, 0.16),
+        inset 12px 12px 18px rgba(255, 255, 255, 0.95),
+        inset -14px -16px 22px rgba(32, 29, 23, 0.07);
     }
 
-    .station.signal .node-orb {
-      border-color: rgba(183, 121, 31, 0.34);
-      background:
-        radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.94), transparent 0.55rem),
-        radial-gradient(circle at 68% 76%, rgba(183, 121, 31, 0.28), transparent 2.5rem),
-        linear-gradient(145deg, #ffffff, #fff6df);
-    }
-
-    .node-label {
+    .station-card {
       width: 100%;
-      padding: 12px;
+      min-height: 164px;
+      padding: 13px;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #fff;
-      text-align: center;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 8px 20px rgba(32, 29, 23, 0.04);
     }
 
     .station-code {
       color: var(--muted);
       font-size: 11px;
-      font-weight: 650;
-      letter-spacing: 0.05em;
+      font-weight: 760;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .station-name {
       margin-top: 6px;
       color: var(--text);
       font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
+      font-weight: 780;
+      letter-spacing: -0.04em;
     }
 
     .station-desc {
-      margin-top: 6px;
+      margin-top: 7px;
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
-    .state {
-      display: inline-flex;
-      margin-top: 10px;
+    .badge {
+      width: fit-content;
+      margin-top: 12px;
       padding: 5px 8px;
       border-radius: 999px;
-      color: var(--accent);
-      background: var(--accent-soft);
+      color: var(--primary-strong);
+      background: var(--primary-soft);
       font-size: 12px;
-      font-weight: 650;
+      font-weight: 720;
     }
 
-    .state.issue {
-      color: var(--danger);
-      background: var(--danger-soft);
-    }
-
-    .state.signal {
+    .badge.signal {
       color: var(--warning);
       background: var(--warning-soft);
     }
 
-    .node-note {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
+    .badge.issue {
+      color: var(--danger);
+      background: var(--danger-soft);
     }
 
-    .details {
+    .station-note {
+      margin-top: 10px;
+      color: var(--text-soft);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .split {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
     }
 
     .list {
@@ -368,132 +537,207 @@ DEMO_HTML = """<!doctype html>
       padding: 14px;
     }
 
-    .item {
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #fff;
+    .list-item {
+      display: grid;
+      gap: 8px;
+      padding: 15px;
+      border: 1px solid rgba(222, 217, 207, 0.86);
+      border-radius: 17px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(251, 250, 247, 0.9));
     }
 
-    .item-type {
-      margin-bottom: 7px;
-      color: var(--accent);
+    .item-kicker {
+      color: var(--primary-strong);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 780;
+      letter-spacing: 0.01em;
     }
 
-    .item-type.boundary {
+    .item-kicker.boundary {
       color: var(--danger);
     }
 
     .item-text {
-      color: #3f3f3f;
+      color: var(--text-soft);
       font-size: 14px;
-      line-height: 1.62;
-    }
-
-    .empty {
-      padding: 46px 20px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.8;
+      line-height: 1.68;
     }
 
     .toast {
-      display: none;
       position: fixed;
       left: 50%;
       bottom: 24px;
-      z-index: 5;
+      z-index: 10;
+      display: none;
+      width: min(540px, calc(100vw - 28px));
       transform: translateX(-50%);
-      max-width: min(520px, calc(100vw - 28px));
-      padding: 12px 14px;
-      border: 1px solid #ffd6d6;
-      border-radius: 14px;
+      padding: 13px 15px;
+      border: 1px solid rgba(180, 35, 24, 0.22);
+      border-radius: 16px;
       color: var(--danger);
       background: #fff;
-      box-shadow: var(--shadow);
+      box-shadow: var(--ink-shadow);
     }
 
-    .toast.show { display: block; }
+    .toast.show {
+      display: block;
+    }
 
-    @media (max-width: 980px) {
-      .line-stage {
-        min-width: 0;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
       }
-      .line-stage::before { display: none; }
-      .details { grid-template-columns: 1fr; }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    @media (max-width: 700px) {
-      .topbar {
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 1040px) {
+      .line-section {
+        overflow-x: auto;
+        padding-bottom: 20px;
+      }
+      .split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app-shell {
+        width: min(100vw - 24px, 1180px);
+        padding-top: 16px;
+      }
+      .nav {
         align-items: flex-start;
         flex-direction: column;
-        margin-bottom: 48px;
       }
-      .hero { text-align: left; }
-      .input-row { grid-template-columns: 1fr; }
-      .run { width: 100%; }
-      .line-stage { grid-template-columns: 1fr; }
+      .hero {
+        text-align: left;
+      }
+      .eyebrow {
+        margin-left: 0;
+      }
+      .composer-main {
+        grid-template-columns: 1fr;
+      }
+      .send-button {
+        width: 100%;
+        min-height: 52px;
+      }
+      .panel-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .panel-meta {
+        text-align: left;
+        white-space: normal;
+      }
+      .line-map {
+        min-width: 0;
+        grid-template-columns: 1fr;
+      }
+      .line-map::before {
+        display: none;
+      }
+      .station {
+        grid-template-columns: 92px 1fr;
+        align-items: center;
+        justify-items: stretch;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="mark">M</div>
-        <div>ManuGent</div>
+  <main class="app-shell">
+    <header class="nav" aria-label="页面信息">
+      <div class="brand" aria-label="ManuGent">
+        <div class="brand-mark" aria-hidden="true">MG</div>
+        <span>ManuGent</span>
       </div>
-      <div class="top-meta">
-        <span>MES Line Map</span>
-        <span>LangGraph RCA</span>
-        <span>Evidence Overlay</span>
+      <div class="nav-meta" aria-label="能力标签">
+        <span class="pill"><span class="dot" aria-hidden="true"></span>MES Agent</span>
+        <span class="pill">Workflow Registry</span>
+        <span class="pill">Evidence Chain</span>
       </div>
     </header>
 
-    <section class="hero">
-      <h1>问一句话，看懂整条产线。</h1>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow">AI manufacturing copilot</div>
+      <h1 id="page-title">用一句话定位产线异常。</h1>
       <p class="subtitle">
-        用自然语言询问 MES，系统会把良率、缺陷、物料、设备和历史记忆
-        映射到产线节点上。
+        输入现场问题，ManuGent 会调用 MES workflow，把生产、质量、物料、设备和历史记忆
+        汇总成可解释的证据链，并映射到具体工序节点。
       </p>
     </section>
 
-    <section class="composer">
-      <div class="input-row">
+    <section class="composer" aria-label="MES 问题输入">
+      <div class="composer-main">
+        <label class="field-label" for="question">MES 现场问题</label>
         <textarea
           id="question"
           placeholder="例如：SMT-03 最近 24 小时良率为什么下降？"
         >SMT-03 最近 24 小时良率为什么下降？</textarea>
-        <button id="run-button" class="run" onclick="runRca()" aria-label="分析">
-          ↑
+        <button
+          id="run-button"
+          class="send-button"
+          onclick="runWorkflow()"
+          aria-label="开始分析"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path d="M12 19V5"></path>
+            <path d="m5 12 7-7 7 7"></path>
+          </svg>
         </button>
       </div>
-      <div class="prompts">
-        <button class="chip" onclick="useExample('SMT-03 最近 24 小时良率为什么下降？')">
+      <div class="prompt-row" aria-label="示例问题">
+        <button class="prompt-chip" onclick="useExample('SMT-03 最近 24 小时良率为什么下降？')">
           良率下降
         </button>
-        <button class="chip" onclick="useExample('帮我分析 SMT-03 今天 AOI 缺陷集中在哪个环节')">
-          AOI 缺陷
+        <button
+          class="prompt-chip"
+          onclick="useExample('帮我分析 SMT-03 今天 AOI 缺陷集中在哪个环节')"
+        >
+          AOI 缺陷集中
         </button>
-        <button class="chip" onclick="useExample('SMT-03 最近是不是设备和物料一起影响了质量？')">
-          设备 + 物料
+        <button
+          class="prompt-chip"
+          onclick="useExample('SMT-03 最近是不是设备和物料一起影响了质量？')"
+        >
+          设备与物料关联
         </button>
       </div>
     </section>
 
-    <section id="answer" class="answer">
+    <section id="response" class="response" aria-live="polite">
       <article class="panel">
-        <div class="empty">
-          输入一个 MES 现场问题后，系统会点亮产线节点，并给出证据链和建议动作。
+        <div class="empty-state">
+          <div class="empty-card">
+            <h2 class="empty-title">等待一次制造诊断</h2>
+            <p class="empty-text">
+              系统会自动识别产线和时间范围，运行良率下降 RCA workflow，
+              然后生成结论、产线节点、证据链和建议动作。
+            </p>
+          </div>
         </div>
       </article>
     </section>
   </main>
 
-  <div id="error" class="toast"></div>
+  <div id="error" class="toast" role="alert"></div>
 
   <script>
     const stations = [
@@ -562,14 +806,22 @@ DEMO_HTML = """<!doctype html>
     }
 
     function useExample(text) {
-      document.getElementById("question").value = text;
-      document.getElementById("question").focus();
+      const input = document.getElementById("question");
+      input.value = text;
+      input.focus();
     }
 
     function setLoading(isLoading) {
       const button = document.getElementById("run-button");
       button.disabled = isLoading;
-      button.textContent = isLoading ? "…" : "↑";
+      button.innerHTML = isLoading
+        ? `<span aria-hidden="true">...</span>`
+        : `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path d="M12 19V5"></path>
+            <path d="m5 12 7-7 7 7"></path>
+          </svg>
+        `;
     }
 
     function setError(message) {
@@ -587,97 +839,100 @@ DEMO_HTML = """<!doctype html>
       return { status: "signal", related };
     }
 
-    function renderLineMap(data) {
-      const evidence = data.evidence || [];
-      return stations.map(station => {
+    function renderLineMap(report) {
+      const evidence = report.evidence || [];
+      return stations.map((station, index) => {
         const result = stationStatus(station, evidence);
         const stateText = {
           ok: "稳定",
           signal: "波动",
           issue: "异常关联"
         }[result.status];
-        const note = result.related[0]?.summary || "当前问题未直接指向该节点。";
+        const note = result.related[0]?.summary || "当前证据未直接指向该节点。";
 
         return `
-          <div class="station ${result.status}" data-station="${station.id}">
-            <div class="node-orb" aria-hidden="true"></div>
-            <div class="node-label">
+          <div
+            class="station ${result.status}"
+            style="--i:${index}"
+            data-station="${station.id}"
+          >
+            <div class="orb" aria-hidden="true"></div>
+            <div class="station-card">
               <div class="station-code">${station.code}</div>
               <div class="station-name">${station.name}</div>
               <div class="station-desc">${station.desc}</div>
-              <div class="state ${result.status}">${stateText}</div>
-              <div class="node-note">${escapeHtml(note)}</div>
+              <div class="badge ${result.status}">${stateText}</div>
+              <div class="station-note">${escapeHtml(note)}</div>
             </div>
           </div>
         `;
       }).join("");
     }
 
-    function renderEvidence(data) {
-      return (data.evidence || []).map(item => `
-        <div class="item">
-          <div class="item-type">${escapeHtml(item.type)} · ${escapeHtml(item.source_tool)}</div>
+    function renderEvidence(report) {
+      return (report.evidence || []).map(item => `
+        <div class="list-item">
+          <div class="item-kicker">
+            ${escapeHtml(item.type)} / ${escapeHtml(item.source_tool)}
+          </div>
           <div class="item-text">${escapeHtml(item.summary)}</div>
         </div>
       `).join("");
     }
 
-    function renderActions(data) {
-      return (data.recommendations || []).map(item => `
-        <div class="item">
-          <div class="item-type ${item.requires_approval ? "boundary" : ""}">
-            ${item.requires_approval ? "生产控制边界" : "建议动作"} · ${escapeHtml(item.owner)}
+    function renderActions(report) {
+      return (report.recommendations || []).map(item => `
+        <div class="list-item">
+          <div class="item-kicker ${item.requires_approval ? "boundary" : ""}">
+            ${item.requires_approval ? "生产控制边界" : "建议动作"} / ${escapeHtml(item.owner)}
           </div>
           <div class="item-text">${escapeHtml(item.action)}</div>
-          <div class="item-text" style="color:var(--muted);margin-top:6px;">
-            ${escapeHtml(item.rationale || "基于当前证据链生成。")}
-          </div>
+          <div class="item-text">${escapeHtml(item.rationale || "基于当前证据链生成。")}</div>
         </div>
       `).join("");
     }
 
-    function renderReport(data, lineId, timeRange) {
-      const confidence = Math.round((data.confidence || 0) * 100);
-      document.getElementById("answer").innerHTML = `
+    function renderReport(report, lineId, timeRange) {
+      const confidence = Math.round((report.confidence || 0) * 100);
+      document.getElementById("response").innerHTML = `
         <article class="panel">
           <div class="panel-head">
-            <h2>分析结论</h2>
-            <span class="meta">${escapeHtml(lineId)} · ${escapeHtml(timeRange)}
-              · ${confidence}%</span>
+            <h2 class="panel-title">分析结论</h2>
+            <span class="confidence">${confidence}% confidence</span>
           </div>
-          <div class="summary">${escapeHtml(data.finding)}</div>
+          <div class="summary">${escapeHtml(report.finding)}</div>
         </article>
 
         <article class="panel">
           <div class="panel-head">
-            <h2>产线节点</h2>
-            <span class="meta">证据会落到对应工序</span>
+            <h2 class="panel-title">产线节点</h2>
+            <span class="panel-meta">${escapeHtml(lineId)} / ${escapeHtml(timeRange)}</span>
           </div>
-          <div class="line-wrap">
-            <div class="line-stage">${renderLineMap(data)}</div>
+          <div class="line-section">
+            <div class="line-map">${renderLineMap(report)}</div>
           </div>
         </article>
 
-        <section class="details">
+        <section class="split">
           <article class="panel">
             <div class="panel-head">
-              <h2>证据链</h2>
-              <span class="meta">${(data.evidence || []).length} 条</span>
+              <h2 class="panel-title">证据链</h2>
+              <span class="panel-meta">${(report.evidence || []).length} 条证据</span>
             </div>
-            <div class="list">${renderEvidence(data)}</div>
+            <div class="list">${renderEvidence(report)}</div>
           </article>
           <article class="panel">
             <div class="panel-head">
-              <h2>建议动作</h2>
-              <span class="meta">${(data.recommendations || []).length} 条</span>
+              <h2 class="panel-title">建议动作</h2>
+              <span class="panel-meta">${(report.recommendations || []).length} 条建议</span>
             </div>
-            <div class="list">${renderActions(data)}</div>
+            <div class="list">${renderActions(report)}</div>
           </article>
         </section>
       `;
     }
 
-    async function runRca() {
+    async function runWorkflow() {
       const question = document.getElementById("question").value.trim();
       const lineId = inferLineId(question);
       const timeRange = inferTimeRange(question);
@@ -691,19 +946,21 @@ DEMO_HTML = """<!doctype html>
       setLoading(true);
 
       try {
-        const response = await fetch("/workflows/root-cause/yield-drop", {
+        const response = await fetch("/workflows/yield_drop/run", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            line_id: lineId,
-            time_range: timeRange,
+            params: {
+              line_id: lineId,
+              time_range: timeRange
+            },
             session_id: "web-demo"
           })
         });
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        renderReport(data, lineId, timeRange);
+        const payload = await response.json();
+        renderReport(payload.result, lineId, timeRange);
       } catch (error) {
         setError(`分析失败：${error.message}`);
       } finally {
@@ -713,7 +970,7 @@ DEMO_HTML = """<!doctype html>
 
     document.getElementById("question").addEventListener("keydown", event => {
       if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-        runRca();
+        runWorkflow();
       }
     });
   </script>
