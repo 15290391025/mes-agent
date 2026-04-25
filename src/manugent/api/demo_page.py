@@ -9,16 +9,16 @@ DEMO_HTML = """<!doctype html>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
   <style>
     :root {
-      --void: #02030a;
-      --glass: rgba(8, 14, 30, 0.68);
-      --line: rgba(118, 194, 255, 0.24);
-      --text: #f5fbff;
-      --muted: #8da4ba;
-      --cyan: #31e7ff;
-      --violet: #9b6cff;
-      --amber: #ffb84d;
-      --red: #ff4d6d;
-      --green: #37f29b;
+      --void: #0b0f0d;
+      --glass: rgba(17, 25, 22, 0.74);
+      --line: rgba(217, 228, 222, 0.14);
+      --text: #f5f7f4;
+      --muted: #9aa7a0;
+      --cyan: #10a37f;
+      --violet: #d7f3e8;
+      --amber: #d99a2b;
+      --red: #d65f5f;
+      --green: #10a37f;
     }
 
     * { box-sizing: border-box; }
@@ -29,10 +29,10 @@ DEMO_HTML = """<!doctype html>
       min-height: 100vh;
       color: var(--text);
       background:
-        radial-gradient(circle at 50% -10%, rgba(49, 231, 255, 0.22), transparent 34rem),
-        radial-gradient(circle at 16% 8%, rgba(155, 108, 255, 0.22), transparent 28rem),
-        radial-gradient(circle at 84% 12%, rgba(255, 77, 109, 0.16), transparent 24rem),
-        linear-gradient(180deg, #02030a 0%, #071020 56%, #02030a 100%);
+        radial-gradient(circle at 50% -12%, rgba(16, 163, 127, 0.18), transparent 34rem),
+        radial-gradient(circle at 16% 8%, rgba(255, 255, 255, 0.08), transparent 28rem),
+        radial-gradient(circle at 84% 12%, rgba(214, 95, 95, 0.12), transparent 24rem),
+        linear-gradient(180deg, #0b0f0d 0%, #111915 56%, #0b0f0d 100%);
       font-family: "Segoe UI", "Noto Sans SC", system-ui, sans-serif;
       overflow-x: hidden;
     }
@@ -44,8 +44,8 @@ DEMO_HTML = """<!doctype html>
       z-index: 0;
       pointer-events: none;
       background:
-        linear-gradient(rgba(49, 231, 255, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(49, 231, 255, 0.04) 1px, transparent 1px);
+        linear-gradient(rgba(16, 163, 127, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 163, 127, 0.04) 1px, transparent 1px);
       background-size: 64px 64px;
       mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 82%);
       transform: perspective(900px) rotateX(62deg) translateY(-20vh);
@@ -90,14 +90,14 @@ DEMO_HTML = """<!doctype html>
       height: 36px;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(49, 231, 255, 0.48);
+      border: 1px solid rgba(16, 163, 127, 0.48);
       border-radius: 12px;
       color: var(--cyan);
       background:
-        linear-gradient(145deg, rgba(49, 231, 255, 0.2), rgba(155, 108, 255, 0.12)),
+        linear-gradient(145deg, rgba(16, 163, 127, 0.2), rgba(245, 247, 244, 0.12)),
         rgba(255, 255, 255, 0.035);
       box-shadow:
-        0 0 34px rgba(49, 231, 255, 0.22),
+        0 0 34px rgba(16, 163, 127, 0.22),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
@@ -113,7 +113,7 @@ DEMO_HTML = """<!doctype html>
       padding: 7px 10px;
       border: 1px solid rgba(118, 194, 255, 0.18);
       border-radius: 999px;
-      color: #aac4d8;
+      color: #c4cec8;
       background: rgba(255, 255, 255, 0.035);
       font-size: 12px;
       backdrop-filter: blur(16px);
@@ -132,7 +132,7 @@ DEMO_HTML = """<!doctype html>
       letter-spacing: -0.08em;
       font-weight: 850;
       text-wrap: balance;
-      text-shadow: 0 0 44px rgba(49, 231, 255, 0.22);
+      text-shadow: 0 0 44px rgba(16, 163, 127, 0.22);
     }
 
     .hero strong {
@@ -160,7 +160,7 @@ DEMO_HTML = """<!doctype html>
         rgba(4, 9, 22, 0.76);
       box-shadow:
         0 30px 90px rgba(0, 0, 0, 0.52),
-        0 0 70px rgba(49, 231, 255, 0.12),
+        0 0 70px rgba(16, 163, 127, 0.12),
         inset 0 1px 0 rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(24px);
       overflow: hidden;
@@ -189,19 +189,19 @@ DEMO_HTML = """<!doctype html>
       line-height: 1.75;
     }
 
-    textarea::placeholder { color: #61798f; }
+    textarea::placeholder { color: #7f8c85; }
 
     .run {
       width: 86px;
       height: 60px;
-      border: 1px solid rgba(49, 231, 255, 0.42);
+      border: 1px solid rgba(16, 163, 127, 0.42);
       border-radius: 20px;
-      color: #001018;
-      background: linear-gradient(135deg, #64f3ff, #37f29b 54%, #a5ffcb);
+      color: #07110d;
+      background: linear-gradient(135deg, #f5f7f4, #10a37f 54%, #b7ebd9);
       cursor: pointer;
       font: 900 14px "Segoe UI", sans-serif;
       box-shadow:
-        0 18px 44px rgba(49, 231, 255, 0.28),
+        0 18px 44px rgba(16, 163, 127, 0.28),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
     }
 
@@ -221,7 +221,7 @@ DEMO_HTML = """<!doctype html>
     .chip {
       border: 1px solid rgba(118, 194, 255, 0.18);
       border-radius: 999px;
-      color: #a8c6dd;
+      color: #c4cec8;
       background: rgba(255, 255, 255, 0.035);
       padding: 8px 11px;
       cursor: pointer;
@@ -230,8 +230,8 @@ DEMO_HTML = """<!doctype html>
 
     .chip:hover {
       color: var(--cyan);
-      border-color: rgba(49, 231, 255, 0.48);
-      box-shadow: 0 0 24px rgba(49, 231, 255, 0.12);
+      border-color: rgba(16, 163, 127, 0.48);
+      box-shadow: 0 0 24px rgba(16, 163, 127, 0.12);
     }
 
     .answer {
@@ -276,17 +276,15 @@ DEMO_HTML = """<!doctype html>
 
     .summary {
       padding: 24px 24px 28px;
-      color: #eaf9ff;
+      color: #f5f7f4;
       font-size: clamp(21px, 2.15vw, 30px);
       line-height: 1.58;
       letter-spacing: -0.045em;
     }
 
     .line-wrap {
-      padding: 32px 24px 44px;
+      padding: 34px 24px 38px;
       overflow-x: auto;
-      perspective: 1400px;
-      perspective-origin: 50% 20%;
     }
 
     .line-stage {
@@ -294,34 +292,32 @@ DEMO_HTML = """<!doctype html>
       min-width: 1060px;
       display: grid;
       grid-template-columns: repeat(6, minmax(150px, 1fr));
-      gap: 22px;
-      padding: 54px 10px 30px;
-      transform-style: preserve-3d;
-      transform: rotateX(58deg) rotateZ(-3deg);
+      gap: 24px;
+      padding: 22px 10px 12px;
     }
 
     .line-stage::before {
       content: "";
       position: absolute;
-      left: 2%;
-      right: 2%;
-      top: 126px;
-      height: 18px;
+      left: 7%;
+      right: 7%;
+      top: 82px;
+      height: 8px;
       border-radius: 999px;
       background:
-        linear-gradient(90deg, transparent, rgba(49, 231, 255, 0.85), transparent),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(49, 231, 255, 0.12));
+        linear-gradient(90deg, transparent, rgba(16, 163, 127, 0.86), transparent),
+        linear-gradient(180deg, rgba(245, 247, 244, 0.46), rgba(16, 163, 127, 0.1));
       box-shadow:
-        0 0 34px rgba(49, 231, 255, 0.42),
-        0 30px 80px rgba(49, 231, 255, 0.18);
-      transform: translateZ(-40px);
+        0 0 30px rgba(16, 163, 127, 0.34),
+        0 18px 52px rgba(16, 163, 127, 0.16);
     }
 
     .station {
       position: relative;
-      min-height: 220px;
-      transform-style: preserve-3d;
-      transform: translateZ(34px);
+      min-height: 300px;
+      display: grid;
+      grid-template-rows: 166px 1fr;
+      justify-items: center;
       animation: floatNode 5.8s ease-in-out infinite;
     }
 
@@ -332,81 +328,98 @@ DEMO_HTML = """<!doctype html>
     .station:nth-child(6) { animation-delay: -4s; }
 
     @keyframes floatNode {
-      0%, 100% { transform: translateZ(34px) translateY(0); }
-      50% { transform: translateZ(52px) translateY(-8px); }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
     }
 
-    .machine {
-      position: absolute;
-      inset: 0;
-      border: 1px solid rgba(118, 194, 255, 0.28);
-      border-radius: 22px;
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.025) 45%),
-        linear-gradient(180deg, rgba(13, 34, 62, 0.96), rgba(4, 10, 24, 0.98));
-      box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.46),
-        0 0 44px rgba(49, 231, 255, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      transform-style: preserve-3d;
-      overflow: hidden;
-    }
-
-    .machine::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent),
-        radial-gradient(circle at 78% 16%, rgba(49, 231, 255, 0.28), transparent 8rem);
-      transform: translateX(-70%);
-      animation: sweep 4.8s ease-in-out infinite;
-    }
-
-    @keyframes sweep {
-      0%, 44% { transform: translateX(-85%); opacity: 0; }
-      58% { opacity: 1; }
-      100% { transform: translateX(85%); opacity: 0; }
-    }
-
-    .machine::after {
-      content: "";
-      position: absolute;
-      left: 12px;
-      right: 12px;
-      bottom: -24px;
-      height: 52px;
-      border-radius: 50%;
-      background: rgba(49, 231, 255, 0.2);
-      filter: blur(24px);
-      transform: translateZ(-60px);
-    }
-
-    .station.issue .machine {
-      border-color: rgba(255, 77, 109, 0.74);
-      box-shadow:
-        0 28px 80px rgba(0, 0, 0, 0.52),
-        0 0 70px rgba(255, 77, 109, 0.32),
-        inset 0 1px 0 rgba(255, 255, 255, 0.22);
-    }
-
-    .station.issue .machine::after { background: rgba(255, 77, 109, 0.44); }
-
-    .station.signal .machine {
-      border-color: rgba(255, 184, 77, 0.66);
-      box-shadow:
-        0 28px 70px rgba(0, 0, 0, 0.48),
-        0 0 58px rgba(255, 184, 77, 0.24),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    .machine-face {
+    .node-orb {
       position: relative;
       z-index: 1;
-      height: 100%;
-      padding: 16px;
-      transform: rotateX(-58deg) rotateZ(3deg) translateY(20px);
-      transform-origin: 50% 0;
+      width: 132px;
+      height: 132px;
+      align-self: start;
+      border: 1px solid rgba(217, 228, 222, 0.22);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.92), transparent 0.28rem),
+        radial-gradient(circle at 34% 28%, rgba(245, 247, 244, 0.52), transparent 2.1rem),
+        radial-gradient(circle at 70% 76%, rgba(16, 163, 127, 0.5), transparent 3.3rem),
+        linear-gradient(145deg, rgba(245, 247, 244, 0.14), rgba(16, 163, 127, 0.16)),
+        rgba(12, 19, 16, 0.88);
+      box-shadow:
+        0 26px 68px rgba(0, 0, 0, 0.4),
+        0 0 44px rgba(16, 163, 127, 0.2),
+        inset -18px -24px 42px rgba(0, 0, 0, 0.38),
+        inset 14px 16px 28px rgba(245, 247, 244, 0.08);
+    }
+
+    .node-orb::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(245, 247, 244, 0.18);
+      background:
+        linear-gradient(115deg, transparent 20%, rgba(245, 247, 244, 0.28), transparent 52%);
+      transform: rotate(-18deg);
+      animation: orbSpin 6s linear infinite;
+    }
+
+    @keyframes orbSpin {
+      to { transform: rotate(342deg); }
+    }
+
+    .node-orb::after {
+      content: "";
+      position: absolute;
+      left: 20%;
+      right: 20%;
+      bottom: -22px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(16, 163, 127, 0.34);
+      filter: blur(18px);
+    }
+
+    .station.issue .node-orb {
+      border-color: rgba(214, 95, 95, 0.58);
+      background:
+        radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.92), transparent 0.28rem),
+        radial-gradient(circle at 34% 28%, rgba(245, 247, 244, 0.48), transparent 2rem),
+        radial-gradient(circle at 70% 76%, rgba(214, 95, 95, 0.62), transparent 3.5rem),
+        linear-gradient(145deg, rgba(245, 247, 244, 0.1), rgba(214, 95, 95, 0.22)),
+        rgba(20, 11, 12, 0.9);
+      box-shadow:
+        0 26px 70px rgba(0, 0, 0, 0.42),
+        0 0 54px rgba(214, 95, 95, 0.38),
+        inset -18px -24px 42px rgba(0, 0, 0, 0.4),
+        inset 14px 16px 28px rgba(245, 247, 244, 0.08);
+    }
+
+    .station.issue .node-orb::after { background: rgba(214, 95, 95, 0.42); }
+
+    .station.signal .node-orb {
+      border-color: rgba(217, 154, 43, 0.55);
+      background:
+        radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.92), transparent 0.28rem),
+        radial-gradient(circle at 34% 28%, rgba(245, 247, 244, 0.5), transparent 2rem),
+        radial-gradient(circle at 70% 76%, rgba(217, 154, 43, 0.58), transparent 3.4rem),
+        linear-gradient(145deg, rgba(245, 247, 244, 0.12), rgba(217, 154, 43, 0.18)),
+        rgba(20, 16, 10, 0.9);
+    }
+
+    .node-label {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 128px;
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid rgba(217, 228, 222, 0.1);
+      border-radius: 20px;
+      background: rgba(13, 18, 16, 0.62);
+      backdrop-filter: blur(18px);
+      text-align: center;
     }
 
     .station-code {
@@ -422,7 +435,7 @@ DEMO_HTML = """<!doctype html>
       font-size: 23px;
       font-weight: 900;
       letter-spacing: -0.05em;
-      text-shadow: 0 0 22px rgba(49, 231, 255, 0.18);
+      text-shadow: 0 0 22px rgba(16, 163, 127, 0.18);
     }
 
     .station-desc {
@@ -437,7 +450,7 @@ DEMO_HTML = """<!doctype html>
       margin-top: 12px;
       padding: 6px 8px;
       border-radius: 999px;
-      color: #031018;
+      color: #06120d;
       background: var(--green);
       font-size: 11px;
       font-weight: 900;
@@ -448,7 +461,7 @@ DEMO_HTML = """<!doctype html>
 
     .node-note {
       margin-top: 12px;
-      color: #d9f6ff;
+      color: #e8eee9;
       font-size: 12px;
       line-height: 1.58;
     }
@@ -486,7 +499,7 @@ DEMO_HTML = """<!doctype html>
     .item-type.boundary { color: var(--red); }
 
     .item-text {
-      color: #d8e9f3;
+      color: #dfe7e2;
       font-size: 13px;
       line-height: 1.68;
     }
@@ -507,7 +520,7 @@ DEMO_HTML = """<!doctype html>
       transform: translateX(-50%);
       max-width: min(520px, calc(100vw - 28px));
       padding: 12px 14px;
-      border: 1px solid rgba(255, 77, 109, 0.42);
+      border: 1px solid rgba(214, 95, 95, 0.42);
       border-radius: 14px;
       color: #ffecec;
       background: rgba(80, 12, 28, 0.92);
@@ -517,19 +530,14 @@ DEMO_HTML = """<!doctype html>
     .toast.show { display: block; }
 
     @media (max-width: 980px) {
-      .line-wrap { perspective: none; }
       .line-stage {
         min-width: 0;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        transform: none;
       }
-      .line-stage::before { display: none; }
       .station,
       .station:nth-child(n) {
-        transform: none;
         animation: none;
       }
-      .machine-face { transform: none; }
       .details { grid-template-columns: 1fr; }
     }
 
@@ -552,14 +560,14 @@ DEMO_HTML = """<!doctype html>
         <div>ManuGent</div>
       </div>
       <div class="top-meta">
-        <span>3D MES Line</span>
+        <span>MES Node Line</span>
         <span>LangGraph RCA</span>
         <span>AI Evidence Overlay</span>
       </div>
     </header>
 
     <section class="hero">
-      <h1>Ask the MES.<br><strong>See the line in 3D.</strong></h1>
+      <h1>Ask the MES.<br><strong>See the line as nodes.</strong></h1>
       <p class="subtitle">
         用一句自然语言询问现场，ManuGent 将良率、缺陷、物料批次、设备告警和历史记忆
         投射到立体产线节点上，直接看到问题发生在哪一段流程。
@@ -708,14 +716,13 @@ DEMO_HTML = """<!doctype html>
 
         return `
           <div class="station ${result.status}" data-station="${station.id}">
-            <div class="machine">
-              <div class="machine-face">
-                <div class="station-code">${station.code}</div>
-                <div class="station-name">${station.name}</div>
-                <div class="station-desc">${station.desc}</div>
-                <div class="state ${result.status}">${stateText}</div>
-                <div class="node-note">${escapeHtml(note)}</div>
-              </div>
+            <div class="node-orb" aria-hidden="true"></div>
+            <div class="node-label">
+              <div class="station-code">${station.code}</div>
+              <div class="station-name">${station.name}</div>
+              <div class="station-desc">${station.desc}</div>
+              <div class="state ${result.status}">${stateText}</div>
+              <div class="node-note">${escapeHtml(note)}</div>
             </div>
           </div>
         `;
@@ -860,7 +867,7 @@ DEMO_HTML = """<!doctype html>
       push();
       rotateX(PI / 2.2);
       translate(0, 280, -260);
-      stroke(49, 231, 255, 34);
+      stroke(217, 228, 222, 18);
       strokeWeight(1);
       for (let i = -1200; i <= 1200; i += 80) {
         line(i, -900, i, 900);
@@ -872,9 +879,9 @@ DEMO_HTML = """<!doctype html>
     function draw() {
       clear();
       const activeBoost = window.manuState.active ? 2.6 : 1;
-      ambientLight(18, 32, 48);
-      pointLight(49, 231, 255, -240, -160, 260);
-      pointLight(155, 108, 255, 260, -120, 140);
+      ambientLight(20, 28, 24);
+      pointLight(16, 163, 127, -240, -160, 260);
+      pointLight(245, 247, 244, 260, -120, 140);
       drawGrid();
 
       noStroke();
@@ -887,7 +894,7 @@ DEMO_HTML = """<!doctype html>
         }
         push();
         translate(star.x, star.y, star.z);
-        fill(49, 231, 255, window.manuState.active ? 190 : 96);
+        fill(217, 228, 222, window.manuState.active ? 124 : 58);
         sphere(star.size, 6, 4);
         pop();
       }
@@ -897,7 +904,7 @@ DEMO_HTML = """<!doctype html>
         push();
         translate(beam.x, y, beam.z);
         rotateZ(frameCount * 0.002 + beam.offset);
-        stroke(49, 231, 255, window.manuState.active ? 70 : 28);
+        stroke(16, 163, 127, window.manuState.active ? 54 : 18);
         strokeWeight(1.2);
         line(-120, 0, 120, 0);
         pop();
@@ -906,7 +913,7 @@ DEMO_HTML = """<!doctype html>
       if (window.manuState.issueNodes.length) {
         push();
         noFill();
-        stroke(255, 77, 109, 90 + sin(frameCount * 0.08) * 55);
+        stroke(214, 95, 95, 90 + sin(frameCount * 0.08) * 55);
         strokeWeight(2);
         rotateX(frameCount * 0.006);
         rotateY(frameCount * 0.008);
